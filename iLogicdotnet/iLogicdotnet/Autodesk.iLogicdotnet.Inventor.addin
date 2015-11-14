@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 20.0-->
+  <ClassId>{71a7b2f1-19fe-43aa-ba19-dd3476802e3b}</ClassId>
+  <ClientId>{71a7b2f1-19fe-43aa-ba19-dd3476802e3b}</ClientId>
+  <DisplayName>iLogicdotnet</DisplayName>
+  <Description>iLogicdotnet</Description>
+  <Assembly>iLogicdotnet.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>19..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

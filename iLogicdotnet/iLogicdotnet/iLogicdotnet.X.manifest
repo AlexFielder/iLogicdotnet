@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="iLogicdotnet" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{71a7b2f1-19fe-43aa-ba19-dd3476802e3b}" progid="iLogicdotnet.StandardAddInServer" threadingModel="Both" name="iLogicdotnet.iLogicdotnet.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="iLogicdotnet.dll" hashalg="SHA1"></file>
+
+</assembly>
