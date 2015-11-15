@@ -88,6 +88,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="StandardAddInServer.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -97,10 +102,15 @@
     <None Include="Autodesk.iLogicdotnet.Inventor.addin" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <Content Include="iLogicUserSnippets.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -135,9 +145,10 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>call "%25VS110COMNTOOLS%25vsvars32"
-			mt.exe -manifest "$(ProjectDir)iLogicdotnet.X.manifest" -outputresource:"$(TargetPath)";#2
-			XCopy "$(TargetPath)" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
-		    XCopy "$(ProjectDir)Autodesk.iLogicdotnet.Inventor.addin" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
-	</PostBuildEvent>
+mt.exe -manifest "$(ProjectDir)iLogicdotnet.X.manifest" -outputresource:"$(TargetPath)";#2
+XCopy "$(TargetPath)" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
+XCopy "$(TargetPath).config" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
+XCopy "$(TargetDir)$(TargetName).pdb" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
+XCopy "$(ProjectDir)Autodesk.iLogicdotnet.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R</PostBuildEvent>
   </PropertyGroup>
 </Project>

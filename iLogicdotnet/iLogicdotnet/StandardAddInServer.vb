@@ -10,6 +10,10 @@ Namespace iLogicdotnet
 
         Private WithEvents m_uiEvents As UserInterfaceEvents
         'Private WithEvents m_sampleButton As ButtonDefinition
+        Private DumpiLogicRulesButton As ButtonDefinition
+        Private ExtractiLogicRulesButton As ButtonDefinition
+        Private SimplifyRulesButton As ButtonDefinition
+
 
 #Region "ApplicationAddInServer Members"
 
@@ -26,11 +30,31 @@ Namespace iLogicdotnet
             ' TODO: Add button definitions.
 
             ' Sample to illustrate creating a button definition.
-            'Dim largeIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.YourBigImage)
-            'Dim smallIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.YourSmallImage)
-            'Dim controlDefs As Inventor.ControlDefinitions = g_inventorApplication.CommandManager.ControlDefinitions
-            'm_sampleButton = controlDefs.AddButtonDefinition("Command Name", "Internal Name", CommandTypesEnum.kShapeEditCmdType, AddInClientID)
-
+            Dim controlDefs As Inventor.ControlDefinitions = g_inventorApplication.CommandManager.ControlDefinitions
+            DumpiLogicRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameDumpiLogicRules,
+                                                              My.Settings.ButtonInternalNameDumpiLogicRules,
+                                                              CommandTypesEnum.kFileOperationsCmdType,
+                                                              Guid.NewGuid().ToString(),
+                                                              My.Settings.ButtonDescrDumpiLogicRules,
+                                                              My.Settings.ButtonTooltipDumpiLogicRules,
+                                                              GetICOResource(My.Settings.ButtonIconGraitec32x32),
+                                                              GetICOResource(My.Settings.ButtonIconGraitec64x64))
+            ExtractiLogicRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameExtractiLogicRules,
+                                                              My.Settings.ButtonInternalNameExtractiLogicRules,
+                                                              CommandTypesEnum.kFileOperationsCmdType,
+                                                              Guid.NewGuid().ToString(),
+                                                              My.Settings.ButtonDescrExtractiLogicRules,
+                                                              My.Settings.ButtonTooltipExtractiLogicRules,
+                                                              GetICOResource(My.Settings.ButtonIconExtract),
+                                                              GetICOResource(My.Settings.ButtonIconExtract))
+            SimplifyRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameSimplifyiLogicRules,
+                                                              My.Settings.ButtonInternalNameSimplifyiLogicRules,
+                                                              CommandTypesEnum.kFileOperationsCmdType,
+                                                              Guid.NewGuid().ToString(),
+                                                              My.Settings.ButtonDescrSimplifyiLogicRules,
+                                                              My.Settings.ButtonTooltipSimplifyiLogicRules,
+                                                              GetICOResource(My.Settings.ButtonIconGraitec32x32),
+                                                              GetICOResource(My.Settings.ButtonIconGraitec64x64))
             ' Add to the user interface, if it's the first time.
             If firstTime Then
                 AddToUserInterface()

@@ -1,0 +1,2779 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Version>1</Version>
+  <Snippets>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Read CSV File</Name>
+      <ToolTip>Read the contents of a comma delimited CSV file into an ArrayList</ToolTip>
+      <Index>24001</Index>
+      <Code><![CDATA[Dim ReadCSV As New System.IO.StreamReader(ThisDoc.Path & "\filename.csv")
+Dim WordSets As New ArrayList()
+
+Do While ReadCSV.Peek <> -1
+WordSets.Add(ReadCSV.ReadLine.Split(","))
+Loop
+
+getvalue = WordSets.item(0)(0)
+messagebox.show(getvalue)
+
+'csv file looks like this:
+'test0,00,000
+'test1,100,1000
+'test2,200,2000
+
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Export Parameters to CSV</Name>
+      <ToolTip>Export Parameter Names and their Values to a
+comma delimited CSV file.</ToolTip>
+      <Index>24002</Index>
+      <Code><![CDATA['Output parameters names and values to a comma delimited CSV file
+
+fileheader = "Parameters Report for " & ThisDoc.PathAndFileName(True) 'first line header of csv file
+description = "Main Parameters and their values" 'use this variable in the body of the html
+TableMembers = New String () {"d0", "d1", "d2"} 'parameters (names) to include in table
+delimiter = "," 'character to separate the names and values on each line
+
+'CSV filename uses this documents path and filename with a .csv extention
+Dim oFile as System.IO.File
+Dim oWrite as System.IO.StreamWriter
+csv_filename = ThisDoc.PathAndFileName(False) & ".csv"
+
+oWrite = oFile.CreateText(csv_filename) 'name and path of csv file to create/overwrite
+oWrite.WriteLine(fileheader) 'include the fileheader on the first line
+oWrite.WriteLine(description) 'include the description on the second line
+oWrite.WriteLine(NOW()) 'include the current date and time on the third line
+oWrite.WriteLine() 'blank line
+
+'write the parameter name , value for each parameter in the TableMembers Arraylist
+for each pName as String in TableMembers
+oWrite.WriteLine(pName & delimiter & DynaParam(pName)) 
+next
+
+oWrite.Close()
+
+'option to view report
+go = MessageBox.Show("Would you like to view the csv file?", "iLogic CSV Output", MessageBoxButtons.YesNo)
+if go = 6 then ThisDoc.Launch(csv_filename)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Publish DWF 3D</Name>
+      <ToolTip>Publish a 3D DWF file of the document containing this rule.
+File name and path match the Rule document with .dwf extention</ToolTip>
+      <Index>24003</Index>
+      <Code><![CDATA[i = MessageBox.Show("Launch the viewer now?", "Title",MessageBoxButtons.YesNo)
+if i = vbYes then : launchviewer = 1 : else : launchviewer = 0 : end if
+
+path_and_name = ThisDoc.PathAndFileName(False) ' without extension
+DWFAddIn = ThisApplication.ApplicationAddIns.ItemById("{0AC6FD95-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+
+If DWFAddIn.HasSaveCopyAsOptions(oDataMedium, oContext, oOptions) Then
+oOptions.Value("Launch_Viewer") = launchviewer
+oOptions.Value("Publish_All_Component_Props") = 1
+oOptions.Value("Publish_All_Physical_Props") = 1
+oOptions.Value("Password") = 0
+End If
+
+'Set the destination file name
+oDataMedium.FileName = path_and_name & ".dwf"
+
+'Publish document.
+Call DWFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+if launchviewer = 1 then ThisDoc.Launch(path_and_name & ".dwf")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Publish DWF 2D</Name>
+      <ToolTip>Publish a DWF file of all sheets in the current drawing document.
+3D model is not included.</ToolTip>
+      <Index>24004</Index>
+      <Code><![CDATA['this rule outputs all drawing sheets to dwf, 3D models not included
+path_and_name = ThisDoc.PathAndFileName(False)
+DWFAddIn = ThisApplication.ApplicationAddIns.ItemById("{0AC6FD95-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+
+i = MessageBox.Show("Launch the viewer now?", "Title",MessageBoxButtons.YesNo)
+if i = vbYes then : launchviewer = 1 : else : launchviewer = 0 : end if 
+
+If DWFAddIn.HasSaveCopyAsOptions(oDataMedium, oContext, oOptions) Then
+oOptions.Value("Launch_Viewer") = launchviewer
+oOptions.Value("Publish_All_Component_Props") = 1
+oOptions.Value("Publish_All_Physical_Props") = 1
+oOptions.Value("Password") = 0
+If TypeOf oDocument Is DrawingDocument Then
+oOptions.Value("Publish_Mode") = DWFPublishModeEnum.kCustomDWFPublish
+oOptions.Value("Publish_All_Sheets") = 1
+End If
+End If
+
+oDataMedium.FileName = path_and_name & "_2D.dwf"
+Call DWFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+if launchviewer = 1 then ThisDoc.Launch(path_and_name & "_2D.dwf")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Publish DWF 2D and 3D</Name>
+      <ToolTip>Publish a DWF file of all sheets in the current drawing document.
+3D model is included for the Sheet:1
+Use this in a drawing rule.</ToolTip>
+      <Index>24005</Index>
+      <Code><![CDATA['this rule outputs all drawing sheets to dwf, 3D models of first sheet included
+path_and_name = ThisDoc.PathAndFileName(False)
+DWFAddIn = ThisApplication.ApplicationAddIns.ItemById("{0AC6FD95-2F4D-42CE-8BE0-8AEA580399E4}")
+oDocument = ThisApplication.ActiveDocument
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+
+i = MessageBox.Show("Launch the viewer now?", "Title",MessageBoxButtons.YesNo)
+if i = vbYes then : launchviewer = 1 : else : launchviewer = 0 : end if 
+
+If DWFAddIn.HasSaveCopyAsOptions(oDataMedium, oContext, oOptions) Then
+oOptions.Value("Launch_Viewer") = launchviewer
+oOptions.Value("Publish_All_Component_Props") = 1
+oOptions.Value("Publish_All_Physical_Props") = 1
+oOptions.Value("Password") = 0
+If TypeOf oDocument Is DrawingDocument Then
+Dim oSheets As NameValueMap
+oSheets = ThisApplication.TransientObjects.CreateNameValueMap
+oOptions.Value("Publish_Mode") = DWFPublishModeEnum.kCustomDWFPublish
+oOptions.Value("Publish_All_Sheets") = 1
+' Publish the first sheet AND its 3D model
+Dim oSheet1Options As NameValueMap
+oSheet1Options = ThisApplication.TransientObjects.CreateNameValueMap
+oSheet1Options.Add("Name", "Sheet:1")
+oSheet1Options.Add("3DModel", True)
+oSheets.Value("Sheet1") = oSheet1Options
+end If
+End If
+
+oDataMedium.FileName = path_and_name & ".dwf"
+Call DWFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+if launchviewer = 1 then ThisDoc.Launch(path_and_name & ".dwf")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Export DXF from IDW</Name>
+      <ToolTip>Export a DXF file from an Inventor Drawing Document (.idw)</ToolTip>
+      <Index>24006</Index>
+      <Code><![CDATA[' Get the DXF translator Add-In.
+Dim DXFAddIn As TranslatorAddIn
+DXFAddIn = ThisApplication.ApplicationAddIns.ItemById("{C24E3AC4-122E-11D5-8E91-0010B541CD80}")
+'Set a reference to the active document (the document to be published).
+Dim oDocument As Document
+oDocument = ThisApplication.ActiveDocument
+Dim oContext As TranslationContext
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+' Create a NameValueMap object
+Dim oOptions As NameValueMap
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+' Create a DataMedium object
+Dim oDataMedium As DataMedium
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+' Check whether the translator has 'SaveCopyAs' options
+If DXFAddIn.HasSaveCopyAsOptions(oDocument, oContext, oOptions) Then
+Dim strIniFile As String
+strIniFile = "C:\temp\dxfout.ini"
+' Create the name-value that specifies the ini file to use.
+oOptions.Value("Export_Acad_IniFile") = strIniFile
+End If
+'Set the destination file name
+oDataMedium.FileName = ThisDoc.PathAndFileName(False) & ".dxf"
+'Publish document.
+DXFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+'Launch the dxf file in whatever application Windows is set to open this document type with
+i = MessageBox.Show("Preview the DXF file?", "Title",MessageBoxButtons.YesNo,MessageBoxIcon.Question)
+if i = vbyes then ThisDoc.Launch(oDataMedium.FileName)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Save As SAT File</Name>
+      <ToolTip>Save As the current document to a SAT file.
+(assemblies and parts only)</ToolTip>
+      <Index>24007</Index>
+      <Code><![CDATA[' Set reference to active document.
+oDoc = ThisApplication.ActiveDocument
+
+' Check the Document type is an assembly or part
+If (oDoc.DocumentType <> kAssemblyDocumentObject And _
+   oDoc.DocumentType <> kPartDocumentObject) Then
+   MsgBox("Error:Document type is not assembly/part")
+   Exit Sub
+End If
+
+' Get document's full file name
+sFname = ThisDoc.PathAndFileName(False) & ".sat"
+
+' Do a 'Save Copy As' to SAT format
+oDoc.SaveAs(sFname, True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Save As IGES File</Name>
+      <ToolTip>Save As the current document to an IGES file.</ToolTip>
+      <Index>24008</Index>
+      <Code><![CDATA[' Get the IGES translator Add-In.
+Dim oIGESTranslator As TranslatorAddIn
+oIGESTranslator = ThisApplication.ApplicationAddIns.ItemById("{90AF7F44-0C01-11D5-8E83-0010B541CD80}")
+Dim oContext As TranslationContext
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+Dim oOptions As NameValueMap
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+If oIGESTranslator.HasSaveCopyAsOptions(ThisApplication.ActiveDocument, oContext, oOptions) Then
+   ' Set geometry type for wireframe.
+   ' 0 = Surfaces, 1 = Solids, 2 = Wireframe
+   oOptions.Value("GeometryType") = 1
+   ' To set other translator values:
+   ' oOptions.Value("SolidFaceType") = n
+   ' 0 = NURBS, 1 = Analytic
+   ' oOptions.Value("SurfaceType") = n
+   ' 0 = 143(Bounded), 1 = 144(Trimmed)
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+Dim oData As DataMedium
+oData = ThisApplication.TransientObjects.CreateDataMedium
+oData.FileName = ThisDoc.PathAndFileName(False) & ".igs"
+oIGESTranslator.SaveCopyAs(ThisApplication.ActiveDocument, oContext, oOptions, oData)
+End If
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Save As STEP File</Name>
+      <ToolTip>Save As the current document to a STEP file.</ToolTip>
+      <Index>24009</Index>
+      <Code><![CDATA[' Get the STEP translator Add-In.
+Dim oSTEPTranslator As TranslatorAddIn
+oSTEPTranslator = ThisApplication.ApplicationAddIns.ItemById("{90AF7F40-0C01-11D5-8E83-0010B541CD80}")
+Dim oContext As TranslationContext
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+Dim oOptions As NameValueMap
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+
+If oSTEPTranslator.HasSaveCopyAsOptions(ThisApplication.ActiveDocument, oContext, oOptions) Then
+    ' Set application protocol.
+    ' 2 = AP 203 - Configuration Controlled Design
+    ' 3 = AP 214 - Automotive Design
+    oOptions.Value("ApplicationProtocolType") = 3
+    ' Other options...
+    'oOptions.Value("Author") = ""
+    'oOptions.Value("Authorization") = ""
+    'oOptions.Value("Description") = ""
+    'oOptions.Value("Organization") = ""
+    oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+    Dim oData As DataMedium
+    oData = ThisApplication.TransientObjects.CreateDataMedium
+    oData.FileName = ThisDoc.PathAndFileName(False) & ".stp"
+oSTEPTranslator.SaveCopyAs(ThisApplication.ActiveDocument, oContext, oOptions, oData)
+End If]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>File Selection Dialog</Name>
+      <ToolTip>File Selection Dialog
+Edit the code to Set Default Path and file extension filters</ToolTip>
+      <Index>24010</Index>
+      <Code><![CDATA[Dim oFileDlg As inventor.FileDialog = Nothing
+InventorVb.Application.CreateFileDialog(oFileDlg)
+'oFileDlg.Filter = "Inventor Files (*.iam;*.ipt)|*.iam;*.ipt|All Files (*.*)|*.*"
+'oFileDlg.Filter = "XML Files (*.xml)|*.xml"
+'oFileDlg.Filter = "Excel Files (*.xls;*.xlsx)|*.xls;*.xlsx"
+'oFileDlg.Filter = "Text Files (*.txt;*.csv)|*.txt;*.csv"
+'oFileDlg.Filter = "SAT Files (*.sat)|*.sat"
+'oFileDlg.Filter = "IGES Files (*.igs)|*.igs"
+oFileDlg.Filter = "Step Files (*.stp)|*.stp"
+'oFileDlg.DialogTitle = "Select a File"
+oFileDlg.InitialDirectory = ThisDoc.Path
+oFileDlg.CancelError = True
+On Error Resume Next
+oFileDlg.ShowOpen()
+If Err.Number <> 0 Then
+MessageBox.Show("File not chosen.", "Dialog Cancellation")
+ElseIf oFileDlg.FileName <> "" Then
+selectedfile = oFileDlg.FileName
+MessageBox.Show("File " & selectedfile & " was selected.", "Dialog Selection Made")
+End If]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>HTML Report Template</Name>
+      <ToolTip>Create an HTML report including a table of parameter names and their values
+together with an image captured from the current view of the model.</ToolTip>
+      <Index>24011</Index>
+      <Code><![CDATA['create an html report sample
+report_title = "Design Report for " & ThisDoc.PathAndFileName(true) 'variable used the body of the html
+description = "Main Parameters and their values" 'variable used in the body of the html
+
+Dim oFile as System.IO.File
+Dim oWrite as System.IO.StreamWriter
+TableMembers = New String () {"d0", "d1", "d2"} 'parameters to include in table
+
+html_filename = ThisDoc.PathAndFileName(False) & ".html"
+
+oWrite = oFile.CreateText(html_filename) 'name and path of html file to create/overwrite
+oWrite.WriteLine(“<HTML>")
+oWrite.WriteLine(“<HEAD>")
+oWrite.WriteLine(“<META CONTENT=""text/html; charset=iso-8859-1"" HTTP-EQUIV=""Content-Type"" >")
+oWrite.WriteLine(“<TITLE>")
+oWrite.WriteLine(report_title) 'set the html search title with local variable
+oWrite.WriteLine(“</TITLE>")
+oWrite.WriteLine(“</HEAD>")
+oWrite.WriteLine(“<BODY BGCOLOR=""#FFFFFF"">")
+oWrite.WriteLine(“<B><EM><H3>")
+oWrite.WriteLine(report_title) 'first line of the report
+oWrite.WriteLine(“</B></EM></H3>")
+oWrite.WriteLine("<B>Date & Time: </B>")
+oWrite.WriteLine(NOW()) 'today's date and time on the second line
+oWrite.WriteLine("<BR>")
+oWrite.WriteLine(“<B>Description: </B>") 
+oWrite.WriteLine(description) 'desciption string goes on the third line of the report
+oWrite.WriteLine(“<BR>") 
+oWrite.WriteLine(“<B>Customer:</B>  Inventor Designers and Engineers<BR><BR>")
+oWrite.WriteLine(“<TABLE BORDER=""1"" WIDTH=""500"">") 'table width in pixels.  Use % to adjust to browser size.
+
+'create html text lines nessesary to build the table for each parameter specified in the TableMembers array
+for each pName as String in TableMembers
+  oWrite.WriteLine(“<TR><TD WIDTH=""50%"">") 'column width is half of table size
+  oWrite.WriteLine(pName) ' parameter name
+  oWrite.WriteLine(“</TD><TD>")
+  oWrite.WriteLine(DynaParam(pName) ) ' parameter value
+  oWrite.WriteLine(“</TD> </TR>")
+next
+
+'save iso view to jpg
+imagedoc = ThisDoc.PathAndFileName(False) & ".jpg"
+oCamera = InventorVB.Application.ActiveView.Camera 'current iso view
+oCamera.fit
+oCamera.apply
+InventorVB.Application.ActiveView.SaveAsBitmap(imagedoc,1680,1050 ) 
+
+oWrite.WriteLine("</TABLE>") ' end the table
+oWrite.WriteLine("<BR><BR>This is a sample report whose iLogic Rule can be used as a template.<BR>") 'footer notes
+oWrite.WriteLine("iLogic created this report using a rule to generate an html file.")'footer notes
+oWrite.WriteLine("<IMG SRC= """ & imagedoc & """ ALT=""text"" WIDTH = 300 ALIGN = LEFT> ")
+oWrite.WriteLine("</BODY>")
+oWrite.Close()
+
+'option to view report
+go = MessageBox.Show("Would you like to view the Design Report?", "iLogic Reports", MessageBoxButtons.YesNo)
+if go = 6 then ThisDoc.Launch(html_filename)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Windows Voice Command</Name>
+      <ToolTip>Use Windows Voice command to create audio feedback information</ToolTip>
+      <Index>24012</Index>
+      <Code><![CDATA['___Use windows voice command____________
+Dim objSPVoice,colVoices
+objSPVoice = CreateObject("SAPI.SpVoice")
+objSPVoice.Speak ("i Logic Rules")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Sum of ArrayList Values</Name>
+      <ToolTip>Calculate the sum total of all the numerical values in an ArrayList (one dimensional)</ToolTip>
+      <Index>24013</Index>
+      <Code><![CDATA[values = MultiValue.List("test")
+sum = 0
+for each oval in values
+sum += oval
+next
+msgbox(sum)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Split Sentence into Words</Name>
+      <ToolTip>Split a Sentence string into individual words
+Words are captured to an Array.</ToolTip>
+      <Index>24014</Index>
+      <Code><![CDATA['specify word splitting characters "space" and "dash"
+Dim Separators() As Char = {" "c, "-"c} 
+Sentence = "This is a sentence string to split into words"
+Words = Sentence.Split(Separators)
+i = 0
+For each wrd in Words
+MessageBox.Show("Word Index #" & i & " = " & Words(i))
+i += 1
+Next
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Split Word into Characters</Name>
+      <ToolTip>Split a Word String into individual characters.
+Any character can be read from a string using an index number
+(e.g. letter = string(0) would return the first letter of the string)</ToolTip>
+      <Index>24015</Index>
+      <Code><![CDATA[for each letter in WordString
+msgbox(letter)
+next]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Text File Create</Name>
+      <ToolTip>Create and Write to a text file
+(overwrites file each time it is run)</ToolTip>
+      <Index>24016</Index>
+      <Code><![CDATA['____Create and write to a text file_________________
+oWrite = System.IO.File.CreateText(ThisDoc.PathAndFileName(False) & ".txt")
+oWrite.WriteLine("text in first line")
+oWrite.WriteLine("next line")
+oWrite.WriteLine("next line")
+oWrite.Close()
+'open the file
+ThisDoc.Launch(ThisDoc.PathAndFileName(False) & ".txt")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Text File Read</Name>
+      <ToolTip>Read the entire contents of a text file to a string variable.</ToolTip>
+      <Index>24017</Index>
+      <Code><![CDATA['____Open and read a text file_______________________
+oRead = System.IO.File.OpenText(ThisDoc.PathAndFileName(False) & ".txt")
+EntireFile = oRead.ReadToEnd()
+oRead.Close()
+MsgBox(EntireFile, MsgBoxStyle.Information, "Text File Contents")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Text File Append</Name>
+      <ToolTip>Append to an existing text file.
+(the file must exist already)</ToolTip>
+      <Index>24018</Index>
+      <Code><![CDATA['____Open and append to an existing text file_______
+Dim oAppend As System.IO.StreamWriter
+oFile = ThisDoc.PathAndFileName(False) & ".txt"
+oAppend = IO.File.AppendText(oFile)
+oAppend.WriteLine("new line at the end")
+oAppend.Flush()
+oAppend.Close()
+ThisDoc.Launch(oFile)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>My Snippets</Category>
+      <Name>Print Document</Name>
+      <ToolTip>Print the current Inventor document.</ToolTip>
+      <Index>24019</Index>
+      <Code><![CDATA[oPrintMgr = ThisApplication.ActiveDocument.PrintManager
+oPrintMgr.ColorMode = kPrintGrayScale
+'oPrintMgr.ColorMode = kPrintColorPalette
+oPrintMgr.NumberOfCopies = 1
+oPrintMgr.Orientation = kPortraitOrientation
+'oPrintMgr.Orientation = kLandscapeOrientation
+oPrintMgr.PaperSize = kPaperSizeCustom
+oPrintMgr.PaperHeight = 11
+oPrintMgr.PaperWidth = 8.5
+oPrintMgr.SubmitPrint
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Parameter (Dynamic)</Name>
+      <ToolTip>Set or Get the current value of a parameter immediately (while rule is running)</ToolTip>
+      <Index>1000</Index>
+      <Code><![CDATA[Parameter("d0") = 1.2
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>SetList</Name>
+      <ToolTip>Set multivalue list of a parameter by specifying each value to be included in the list</ToolTip>
+      <Index>1001</Index>
+      <Code><![CDATA[MultiValue.SetList("d0", 0.5, 0.75, 1.0, 1.25)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>SetValueOptions (on)</Name>
+      <ToolTip>After setting this, MultiValue.SetList (or assigning to MultiValue.List) will cause the value of the parameter to be changed to a value from the list.</ToolTip>
+      <Index>1002</Index>
+      <Code><![CDATA[MultiValue.SetValueOptions(True, DefaultIndex := 0)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>SetValueOptions (off)</Name>
+      <ToolTip>After setting this, MultiValue will not change the actual value of the parameter</ToolTip>
+      <Index>1003</Index>
+      <Code><![CDATA[MultiValue.SetValueOptions(False)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Get List</Name>
+      <ToolTip>Get the multivalue list for a parameter
+(The VB.NET type of this list is ArrayList)</ToolTip>
+      <Index>1004</Index>
+      <Code><![CDATA[values = MultiValue.List("d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Set List from ArrayList</Name>
+      <ToolTip>Set multivalue list of a parameter by specifying an ArrayList (or array)
+variable to retrieve the values list from.</ToolTip>
+      <Index>1005</Index>
+      <Code><![CDATA[MultiValue.List("d0") = MyArrayList
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>List from Excel (1)</Name>
+      <ToolTip>Set a multivalue list from a range of cells in an Excel sheet.</ToolTip>
+      <Index>1006</Index>
+      <Code><![CDATA[MultiValue.List("d0") = GoExcel.CellValues("filename.xls", "Sheet1", "A2", "A10")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>List from Excel (2)</Name>
+      <ToolTip>Set a multivalue list from a range of cells in an Excel sheet.
+No need to specify the filename and sheet if they have already been used in the rule.</ToolTip>
+      <Index>1007</Index>
+      <Code><![CDATA[MultiValue.List("d1") = GoExcel.CellValues("B2", "B10")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>FindValue in a List</Name>
+      <ToolTip>Find a value in an ArrayList</ToolTip>
+      <Index>1008</Index>
+      <Code><![CDATA[foundVal = MultiValue.FindValue(MultiValue.List("d0"), "<=", 4.0)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Choose</Name>
+      <ToolTip>Choose from a number of values (strings, numbers, parameters or variables).  The index is 1-based.</ToolTip>
+      <Index>1009</Index>
+      <Code><![CDATA[getChoice = Choose(index, "first", "second", "third")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Parameter.Param</Name>
+      <ToolTip>p = Parameter.Param("d0") Access the Inventor Parameter with API
+</ToolTip>
+      <Index>1010</Index>
+      <Code><![CDATA[p = Parameter.Param("d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Tolerance Set Deviation</Name>
+      <ToolTip>Set the deviation tolerance of a parameter by specifying upper and lower limits</ToolTip>
+      <Index>1011</Index>
+      <Code><![CDATA[Parameter.Param("d0").Tolerance.SetToDeviation(0.002 * 2.54, -0.004 * 2.54)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Tolerance Set Symmetric</Name>
+      <ToolTip>Set the symmetric tolerance of a parameter by specifying a value limit</ToolTip>
+      <Index>1012</Index>
+      <Code><![CDATA[Parameter.Param("d0").Tolerance.SetToSymmetric(0.005 * 2.54)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Set Parameter Comment</Name>
+      <ToolTip>Set the comment string for a parameter.</ToolTip>
+      <Index>1013</Index>
+      <Code><![CDATA[Parameter.Param("d1").Comment = "Comment Set by a Rule"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Parameter (ass'y)</Name>
+      <ToolTip>Set or Get the current value of a parameter in a component immediately (while rule is running)</ToolTip>
+      <Index>1015</Index>
+      <Code><![CDATA[Parameter("Part1:1", "d0") = 1.2
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Parameter (ass'y MakePath)</Name>
+      <ToolTip>Set or Get the current value of a parameter in a component
+Using MakePath to drill into a sub-component</ToolTip>
+      <Index>1016</Index>
+      <Code><![CDATA[Parameter(MakePath("SubAssem1:1", "Part1:1"), "d0") = 1.2
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>SetListInComponent</Name>
+      <ToolTip>Set multivalue list of a parameter in a component</ToolTip>
+      <Index>1017</Index>
+      <Code><![CDATA[MultiValue.SetListInComponent("Part1:1", "d0", 0.5, 0.75, 1.0, 1.25)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Get List in Component</Name>
+      <ToolTip>Get the multivalue list for a parameter in a part
+(The VB.NET type of this list is ArrayList)</ToolTip>
+      <Index>1018</Index>
+      <Code><![CDATA[values = MultiValue.List("Part1:1", "d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Value for Equals</Name>
+      <ToolTip>Get the parameter value, for an easier equality test.</ToolTip>
+      <Index>1023</Index>
+      <Code><![CDATA[Parameter.ValueForEquals("d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Quiet Parameter Errors</Name>
+      <ToolTip>No error message if parameter not found (in this rule only)</ToolTip>
+      <Index>1019</Index>
+      <Code><![CDATA[Parameter.Quiet = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Quiet MultiValue Errors</Name>
+      <ToolTip>No error message if parameter not found (in this rule only)</ToolTip>
+      <Index>1020</Index>
+      <Code><![CDATA[MultiValue.Quiet = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>UpdateAfterChange option</Name>
+      <ToolTip>After you set this, the model will be automatically updated after every parameter change.
+(Any change done with a Parameter function, within this rule.)</ToolTip>
+      <Index>1024</Index>
+      <Code><![CDATA[Parameter.UpdateAfterChange = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>UpdateAfterChange for MultiValue</Name>
+      <ToolTip>After you set this, the model will be automatically updated after every
+multivalue change that changes a parameter value.  (Within this rule.)</ToolTip>
+      <Index>1025</Index>
+      <Code><![CDATA[MultiValue.UpdateAfterChange = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Load XML</Name>
+      <ToolTip>Load Parameter Values from an iLogic XML file.
+(creates parameters that do not exist)</ToolTip>
+      <Index>1021</Index>
+      <Code><![CDATA[iLogicVb.Automation.ParametersXmlLoad(ThisDoc.Document, “path\filename.xml")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Save XML</Name>
+      <ToolTip>Save Parameter Values to an iLogic XML file.</ToolTip>
+      <Index>1022</Index>
+      <Code><![CDATA[iLogicVb.Automation.ParametersXmlSave(ThisDoc.Document, "path\filename.xml")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Parameters</Category>
+      <Name>Save XML (Keys only)</Name>
+      <ToolTip>Save only the Key parameters to an iLogic XML file.</ToolTip>
+      <Index>1026</Index>
+      <Code><![CDATA[iLogicVb.Automation.ParametersXmlSave(ThisDoc.Document, "path\filename.xml", KeysOnly)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>IsActive</Name>
+      <ToolTip>Get or set activity of a feature</ToolTip>
+      <Index>2000</Index>
+      <Code><![CDATA[Feature.IsActive("featurename")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>Color</Name>
+      <ToolTip>Get or set the color of a feature</ToolTip>
+      <Index>2001</Index>
+      <Code><![CDATA[Feature.Color("featurename")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>SetThread All</Name>
+      <ToolTip>Major thread change: Set thread type, designation and class.
+(For a tapered thread, use size instead of designation. Use "" for the thread class.)</ToolTip>
+      <Index>2002</Index>
+      <Code><![CDATA[Feature.SetThread("featurename", "thread type", "thread designation", "thread class")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadDesignation</Name>
+      <ToolTip>Get or Set the Designation of a thread.
+(For a tapered thread, use size instead of designation.)</ToolTip>
+      <Index>2003</Index>
+      <Code><![CDATA[Feature.ThreadDesignation("featurename") = "3/8-16 UNC"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadType</Name>
+      <ToolTip>Get the Type of a thread.</ToolTip>
+      <Index>2004</Index>
+      <Code><![CDATA[currentType = Feature.ThreadType("featurename")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadClass</Name>
+      <ToolTip>Get or Set the Class of a thread.</ToolTip>
+      <Index>2005</Index>
+      <Code><![CDATA[Feature.ThreadClass("featurename") = "3B"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>IsActive(Ass'y)</Name>
+      <ToolTip>Get or set activity of a feature (assembly rule)</ToolTip>
+      <Index>2006</Index>
+      <Code><![CDATA[Feature.IsActive("Part1:1", "featurename")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>Color (Ass'y)</Name>
+      <ToolTip>Get or set the color of a feature (assembly rule)</ToolTip>
+      <Index>2007</Index>
+      <Code><![CDATA[Feature.Color("Part1:1", "featurename")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>SetThread All (Ass'y)</Name>
+      <ToolTip>Major thread change: Set thread type, designation and class of a part level thread feature (assembly rule)
+(For a tapered thread, use size instead of designation. Use "" for the thread class.)</ToolTip>
+      <Index>2008</Index>
+      <Code><![CDATA[Feature.SetThread("Part1:1", "featurename", "thread type", "thread designation", "thread class")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadDesignation (Ass'y)</Name>
+      <ToolTip>Get or Set the Designation of a thread (assembly rule)</ToolTip>
+      <Index>2009</Index>
+      <Code><![CDATA[Feature.ThreadDesignation("Part1:1", "featurename") = "1/2-13 UNC"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadType Read (Ass'y)</Name>
+      <ToolTip>Get the Type of a thread (assembly rule)</ToolTip>
+      <Index>2010</Index>
+      <Code><![CDATA[currentType = Feature.ThreadType("Part1:1", "featurename")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Features</Category>
+      <Name>ThreadClass (Ass'y)</Name>
+      <ToolTip>Get or Set the Class of a thread (assembly rule)</ToolTip>
+      <Index>2011</Index>
+      <Code><![CDATA[Feature.ThreadClass("Part1:1", "featurename") = "3B"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>IsActive</Name>
+      <ToolTip>Get or set activity of a Component</ToolTip>
+      <Index>3000</Index>
+      <Code><![CDATA[Component.IsActive("Part1:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>IsActive(MakePath)</Name>
+      <ToolTip>Get or set activity of a Component (with MakePath)</ToolTip>
+      <Index>3001</Index>
+      <Code><![CDATA[Component.IsActive(MakePath("SubAssem1:1", "Part2:1"))]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>iComponentIsActive</Name>
+      <ToolTip>Get or set activity of an iPart or iAssembly Component</ToolTip>
+      <Index>3002</Index>
+      <Code><![CDATA[Component.iComponentIsActive("iPartA:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>Replace</Name>
+      <ToolTip>Replace a component</ToolTip>
+      <Index>3003</Index>
+      <Code><![CDATA[Component.Replace("Part1:1", "OtherPartfilename.ipt", True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>Replace with LOD</Name>
+      <ToolTip>Use a specific LOD of another assembly to replace a component</ToolTip>
+      <Index>3009</Index>
+      <Code><![CDATA[Component.Replace("SubAssembly:1", "OtherAssembly.iam<LevelOfDetail1>", True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>Replace iPart</Name>
+      <ToolTip>Replace an iPart</ToolTip>
+      <Index>3004</Index>
+      <Code><![CDATA[Component.ReplaceiPart("iPart1:1", "OtherPartfilename.ipt", True, rowNumber)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>Color</Name>
+      <ToolTip>Get or Set the color of a component</ToolTip>
+      <Index>3005</Index>
+      <Code><![CDATA[Component.Color("PartA:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>Visible</Name>
+      <ToolTip>Get or Set the Visibility of a component</ToolTip>
+      <Index>3006</Index>
+      <Code><![CDATA[Component.Visible("PartA:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>MakePath</Name>
+      <ToolTip>Name a sub-component. This expression can be used as a component name</ToolTip>
+      <Index>3007</Index>
+      <Code><![CDATA[MakePath("SubAssem1:1", "Part2:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Components</Category>
+      <Name>SkipDocumentSave</Name>
+      <ToolTip>In this rule, don't save a component if it is changed and then suppressed</ToolTip>
+      <Index>3008</Index>
+      <Code><![CDATA[Component.SkipDocumentSave = true
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Part Number</Name>
+      <ToolTip>Set or Get the Project: Part Number iProperty value</ToolTip>
+      <Index>4000</Index>
+      <Code><![CDATA[iProperties.Value("Project", "Part Number")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Description</Name>
+      <ToolTip>Set or Get the Project: Description iProperty value</ToolTip>
+      <Index>4001</Index>
+      <Code><![CDATA[iProperties.Value("Project", "Description")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Revision Number</Name>
+      <ToolTip>Set or Get the Project: Revision Number iProperty value</ToolTip>
+      <Index>4002</Index>
+      <Code><![CDATA[iProperties.Value("Project", "Revision Number")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Title</Name>
+      <ToolTip>Set or Get the Summary: Title iProperty value</ToolTip>
+      <Index>4003</Index>
+      <Code><![CDATA[iProperties.Value("Summary", "Title")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Subject</Name>
+      <ToolTip>Set or Get the Summary: Subject iProperty value</ToolTip>
+      <Index>4004</Index>
+      <Code><![CDATA[iProperties.Value("Summary", "Subject")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Custom</Name>
+      <ToolTip>Get or set a Custom property</ToolTip>
+      <Index>4005</Index>
+      <Code><![CDATA[iProperties.Value("Custom", "PropertyName")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Styles in English</Name>
+      <ToolTip>Get material and color names from the model in English.  If this is set to True, material and color names will not depend on the current language.</ToolTip>
+      <Index>4019</Index>
+      <Code><![CDATA[iProperties.StylesInEnglish = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Material</Name>
+      <ToolTip>Get or set the current material</ToolTip>
+      <Index>4006</Index>
+      <Code><![CDATA[iProperties.Material]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>List of Materials</Name>
+      <ToolTip>Apply the current Inventor list of Materials to a parameter's multivalue list.</ToolTip>
+      <Index>4007</Index>
+      <Code><![CDATA[MultiValue.List("param") = iProperties.Materials
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>PartColor</Name>
+      <ToolTip>Set or Get the part color</ToolTip>
+      <Index>4008</Index>
+      <Code><![CDATA[iProperties.PartColor]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Mass</Name>
+      <ToolTip>Set or Get the Mass
+of the part or assembly that contains this rule.  (use a value of -1 to cancel manual override)</ToolTip>
+      <Index>4009</Index>
+      <Code><![CDATA[mass = iProperties.Mass
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Volume</Name>
+      <ToolTip>Set or Get the Volume
+of the part or assembly that contains this rule.  (use a value of -1 to cancel manual override)
+</ToolTip>
+      <Index>4010</Index>
+      <Code><![CDATA[volume = iProperties.Volume
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>Area</Name>
+      <ToolTip>Set or Get the Area
+of the part or assembly that contains this rule.  (use a value of -1 to cancel manual override)
+</ToolTip>
+      <Index>4011</Index>
+      <Code><![CDATA[surfaceArea = iProperties.Area
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>CenterOfGravity</Name>
+      <ToolTip>Get the center of gravity (center of mass)
+in document units</ToolTip>
+      <Index>4012</Index>
+      <Code><![CDATA[centerPt = iProperties.CenterOfGravity
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>iProperties.Value (ass'y use)</Name>
+      <ToolTip>Get or Set iProperties values in components from an assembly level rule.  Use the component name.</ToolTip>
+      <Index>4013</Index>
+      <Code><![CDATA[iProperties.Value("part1:1", "Project", "Part Number")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>MaterialOfComponent</Name>
+      <ToolTip />
+      <Index>4014</Index>
+      <Code><![CDATA[iProperties.MaterialOfComponent("part1:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>MassOfComponent</Name>
+      <ToolTip />
+      <Index>4015</Index>
+      <Code><![CDATA[iProperties.MassOfComponent("part1:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>VolumeOfComponent</Name>
+      <ToolTip />
+      <Index>4016</Index>
+      <Code><![CDATA[iProperties.VolumeOfComponent("part1:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>AreaOfComponent</Name>
+      <ToolTip />
+      <Index>4017</Index>
+      <Code><![CDATA[surfaceArea = iProperties.AreaOfComponent("part1:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iProperties</Category>
+      <Name>CenterOfGravityOfComponent</Name>
+      <ToolTip />
+      <Index>4018</Index>
+      <Code><![CDATA[centerPt = iProperties.CenterOfGravityOfComponent("part1:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>FindRow</Name>
+      <ToolTip>Find a row in an external spreadsheet that meets the criteria for one or more columns.</ToolTip>
+      <Index>5000</Index>
+      <Code><![CDATA[i = GoExcel.FindRow("filename.xls", "Sheet1", "columnName", "<=", 0.2, "columnName", "<=", 4.1)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>FindRow (embedded)</Name>
+      <ToolTip>Find a row in an embedded spreadsheet that meets a single column criterion</ToolTip>
+      <Index>5001</Index>
+      <Code><![CDATA[i = GoExcel.FindRow("3rd Party:Embedding 1", "Sheet1", "columnName", "<=", 0.2)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>FindRow (embedded, 2 columns)</Name>
+      <ToolTip>Find a row in an embedded spreadsheet that meets two column criteria</ToolTip>
+      <Index>5019</Index>
+      <Code><![CDATA[i = GoExcel.FindRow("3rd Party:Embedding 1", "Sheet1", "columnName", "<=", 0.2, "columnName", "<=", 4.1)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CurrentRowValue</Name>
+      <ToolTip>Get a value from the row that was just found using the FindRow function</ToolTip>
+      <Index>5002</Index>
+      <Code><![CDATA[ = GoExcel.CurrentRowValue("columnName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CellValue</Name>
+      <ToolTip>Read or write a cell</ToolTip>
+      <Index>5003</Index>
+      <Code><![CDATA[GoExcel.CellValue("filename.xls", "Sheet1", "A2")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CellValue (embedded)</Name>
+      <ToolTip>Read or write a cell in an embedded sheet</ToolTip>
+      <Index>5004</Index>
+      <Code><![CDATA[GoExcel.CellValue("3rd Party:Embedding 1", "Sheet1", "A2")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CellValue (current)</Name>
+      <ToolTip>Read or write a cell in the current sheet</ToolTip>
+      <Index>5005</Index>
+      <Code><![CDATA[GoExcel.CellValue("B2")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CellValues</Name>
+      <ToolTip>Read or write a range of cells (Multivalue)
+</ToolTip>
+      <Index>5006</Index>
+      <Code><![CDATA[GoExcel.CellValues("filename.xls", "Sheet1", "A2", "A10")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>CellValues (current)</Name>
+      <ToolTip>Read or write a range of cells in the current sheet
+</ToolTip>
+      <Index>5007</Index>
+      <Code><![CDATA[GoExcel.CellValues("B2", "G2")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>MultiValue list from Excel</Name>
+      <ToolTip>Set a multivalue list from a range of cells in an Excel sheet.
+File name and Sheet name is not needed if the spreadsheet is already open.</ToolTip>
+      <Index>5008</Index>
+      <Code><![CDATA[MultiValue.List("d0") = GoExcel.CellValues("filename.xls", "Sheet1", "A2", "A10")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>MultiValue list to Excel</Name>
+      <ToolTip>Set the values of a range of cells in an Excel sheet.
+File name and Sheet name is not needed if the spreadsheet is already open.</ToolTip>
+      <Index>5009</Index>
+      <Code><![CDATA[GoExcel.CellValues("filename.xls", "Sheet1", "A2", "A10") = Multivalue.List("d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>NamedRangeValue</Name>
+      <ToolTip>Read or write a workbook-level named range (doesn't work in an embedded spreadsheet)</ToolTip>
+      <Index>5010</Index>
+      <Code><![CDATA[GoExcel.NamedRangeValue("Part_Width")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>Open</Name>
+      <ToolTip>Open an Excel file (for further use by GoExcel functions)</ToolTip>
+      <Index>5018</Index>
+      <Code><![CDATA[GoExcel.Open("filename.xls", "Sheet1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>Save</Name>
+      <ToolTip>Save the currently open Excel file</ToolTip>
+      <Index>5011</Index>
+      <Code><![CDATA[GoExcel.Save
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>Close</Name>
+      <ToolTip>Close the currently open Excel file</ToolTip>
+      <Index>5012</Index>
+      <Code><![CDATA[GoExcel.Close
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>ChangeSourceOfLinked</Name>
+      <ToolTip>Change the source Excel file for linked parameters</ToolTip>
+      <Index>5013</Index>
+      <Code><![CDATA[changeOK = GoExcel.ChangeSourceOfLinked(partialOldName, newName)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>TitleRow</Name>
+      <ToolTip>Set the number of the column title (headings) row (for FindRow)</ToolTip>
+      <Index>5020</Index>
+      <Code><![CDATA[GoExcel.TitleRow = 1
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>FindRowStart</Name>
+      <ToolTip>Set the number of the first data row (for FindRow)</ToolTip>
+      <Index>5014</Index>
+      <Code><![CDATA[GoExcel.FindRowStart = 2
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>FindRow Tolerance</Name>
+      <ToolTip>Set the tolerance for FindRow</ToolTip>
+      <Index>5015</Index>
+      <Code><![CDATA[GoExcel.Tolerance = 0.0000001
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>DisplayAlerts</Name>
+      <ToolTip>Don't warn when closing a file that has changed</ToolTip>
+      <Index>5016</Index>
+      <Code><![CDATA[GoExcel.DisplayAlerts = False
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Excel Data Links</Category>
+      <Name>Application</Name>
+      <ToolTip>Get the Excel Application COM object</ToolTip>
+      <Index>5017</Index>
+      <Code><![CDATA[excelApp = GoExcel.Application
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>ChangeRow</Name>
+      <ToolTip>Change current row in an iPart or iAssembly</ToolTip>
+      <Index>6000</Index>
+      <Code><![CDATA[iPart.ChangeRow("iComponentName:1", "RowMemberName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>FindRow</Name>
+      <ToolTip>Find a row that meets given conditions, and change to that row if found
+ (If not found, i will equal -1)</ToolTip>
+      <Index>6001</Index>
+      <Code><![CDATA[i = iPart.FindRow("iComponentName:1", "columnName", "<=", 0.2, "columnName", "<=", 4.1)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>CurrentRowValue</Name>
+      <ToolTip>Get the value of a parameter in the current row of the iPart or iAssembly table</ToolTip>
+      <Index>6002</Index>
+      <Code><![CDATA[ = iPart.CurrentRowValue("columnName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>CurrentRowStringValue</Name>
+      <ToolTip>Get the value of a Custom string in the current row
+(use on string type iPart or iAssembly table columns)</ToolTip>
+      <Index>6003</Index>
+      <Code><![CDATA[ = iPart.CurrentRowStringValue("Part Number [Project]")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>RowName</Name>
+      <ToolTip>Get the name of the current row (a text string)</ToolTip>
+      <Index>6008</Index>
+      <Code><![CDATA[rowName = iPart.RowName("iComponentName:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>RowNumber</Name>
+      <ToolTip>Get the number of the current row</ToolTip>
+      <Index>6009</Index>
+      <Code><![CDATA[rowNumber = iPart.RowNumber("iComponentName:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>ChangeRow (use parent filename)</Name>
+      <ToolTip>Change row, using the name of the parent iPart factory, as if it were the component name</ToolTip>
+      <Index>6004</Index>
+      <Code><![CDATA[iPart.ChangeRow("iParentFileName:1", "rowName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>ChangeRow and Parameters</Name>
+      <ToolTip>Change current row in a custom iPart, also specifying custom parameters.</ToolTip>
+      <Index>6005</Index>
+      <Code><![CDATA[iPart.ChangeRow("iComponentName:1", "RowMemberName", customParam1, customParam2)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>FindRow (use parent filename)</Name>
+      <ToolTip>Find row, using the name of the parent iPart factory, as if it were the component name</ToolTip>
+      <Index>6006</Index>
+      <Code><![CDATA[i = iPart.FindRow("iParentFileName:1", "columnName", "<=", 0.2, "columnName", "<=", 4.1)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iParts</Category>
+      <Name>iPart.Tolerance</Name>
+      <ToolTip>Set the tolerance for FindRow function</ToolTip>
+      <Index>6007</Index>
+      <Code><![CDATA[iPart.Tolerance = 0.0000001
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iFeatures</Category>
+      <Name>ChangeRow</Name>
+      <ToolTip>Change the current row of a table-driven iFeature</ToolTip>
+      <Index>7001</Index>
+      <Code><![CDATA[iFeature.ChangeRow("iFeatureName", rowNumber)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iFeatures</Category>
+      <Name>FindRow</Name>
+      <ToolTip>Find and switch to a row that meets given conditions</ToolTip>
+      <Index>7002</Index>
+      <Code><![CDATA[i = iFeature.FindRow("iFeatureName", "columnName", "<=", 0.2, "columnName", "<=", 4.1)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iFeatures</Category>
+      <Name>CurrentRowValue</Name>
+      <ToolTip>Get the value of a parameter from a specific column in the current row of the iFeature table</ToolTip>
+      <Index>7003</Index>
+      <Code><![CDATA[ = iFeature.CurrentRowValue("columnName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iFeatures</Category>
+      <Name>CurrentRowStringValue</Name>
+      <ToolTip>Get the value of a Custom string column in the current row</ToolTip>
+      <Index>7004</Index>
+      <Code><![CDATA[ = iFeature.CurrentRowStringValue("columnName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>iFeatures</Category>
+      <Name>iFeature.Tolerance</Name>
+      <ToolTip>Set the tolerance for FindRow
+iFeature.Tolerance = 0.0000001</ToolTip>
+      <Index>7005</Index>
+      <Code><![CDATA[iFeature.Tolerance = 0.0000001
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>IsActive (Constraint)</Name>
+      <ToolTip>Set or Get the active status (suppression state) of an assembly Constraint</ToolTip>
+      <Index>8000</Index>
+      <Code><![CDATA[Constraint.IsActive("Mate:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>IsActive (Joint)</Name>
+      <ToolTip>Set or Get the active status (suppression state) of an assembly Joint</ToolTip>
+      <Index>8004</Index>
+      <Code><![CDATA[Joint.IsActive("Rigid:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>IsActive (Constraint in sub-assembly)</Name>
+      <ToolTip>Set or Get the active status (suppression state) of an assembly Constraint in a sub-assembly</ToolTip>
+      <Index>8001</Index>
+      <Code><![CDATA[Constraint.IsActive("SubAssem:1", "Mate:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>IsActive (Joint in sub-assembly)</Name>
+      <ToolTip>Set or Get the active status (suppression state) of an assembly Joint in a sub-assembly</ToolTip>
+      <Index>8005</Index>
+      <Code><![CDATA[Joint.IsActive("SubAssem:1", "Rigid:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>iMateDefIsActive</Name>
+      <ToolTip>Set or Get the active status of an iMate definition</ToolTip>
+      <Index>8002</Index>
+      <Code><![CDATA[Constraint.iMateDefIsActive("iMate:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Relationships</Category>
+      <Name>iMateDefIsActive</Name>
+      <ToolTip>Set or Get the active status of an iMate definition in a sub-assembly</ToolTip>
+      <Index>8003</Index>
+      <Code><![CDATA[Constraint.iMateDefIsActive("SubAssem:1", "iMate:1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>MinimumDistance</Name>
+      <ToolTip>Get the minimum distance between two work features, iMates or Assembly Components</ToolTip>
+      <Index>9000</Index>
+      <Code><![CDATA[Measure.MinimumDistance("entityName1", "entityName2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>MinimumDistance (within components)</Name>
+      <ToolTip>Get the minimum distance between two work features or iMates within Components</ToolTip>
+      <Index>9001</Index>
+      <Code><![CDATA[Measure.MinimumDistance("componentName1", "entityName1", "componentName2", "entityName2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Angle</Name>
+      <ToolTip>Get the angle between two work features or iMates</ToolTip>
+      <Index>9002</Index>
+      <Code><![CDATA[Measure.Angle("entityName1", "entityName2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Angle (within components)</Name>
+      <ToolTip>Get the angle between two work features or iMates within assembly components</ToolTip>
+      <Index>9003</Index>
+      <Code><![CDATA[Measure.Angle("componentName1", "entityName1", "componentName2", "entityName2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Angle (3 points)</Name>
+      <ToolTip>Get the angle between three workpoints (or point iMates)
+(The second point is the angle vertex)</ToolTip>
+      <Index>9004</Index>
+      <Code><![CDATA[Measure.Angle("entityName1", "entityName2", "entityName3")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Angle (3 points within components)</Name>
+      <ToolTip>Get the angle between three workpoints within assembly components</ToolTip>
+      <Index>9005</Index>
+      <Code><![CDATA[Measure.Angle("componentName1", "entityName1", "componentName2", "entityName2", "componentName3", "entityName3")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Area of a Sketch</Name>
+      <ToolTip>Get the area of a sketch
+(In square document length units)</ToolTip>
+      <Index>9006</Index>
+      <Code><![CDATA[Measure.Area("sketchName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>Perimeter</Name>
+      <ToolTip>Get the length of the perimeter of a sketch</ToolTip>
+      <Index>9007</Index>
+      <Code><![CDATA[Measure.Perimeter("sketchName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>ExtentsLength</Name>
+      <ToolTip>Get the length (X direction) of the extents of the part or assembly.</ToolTip>
+      <Index>9008</Index>
+      <Code><![CDATA[Measure.ExtentsLength]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>ExtentsWidth</Name>
+      <ToolTip>Get the width (Y direction) of the extents of the part or assembly.</ToolTip>
+      <Index>9009</Index>
+      <Code><![CDATA[Measure.ExtentsWidth]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Measure</Category>
+      <Name>ExtentsHeight</Name>
+      <ToolTip>Get the height (Z direction) of the extents of the part or assembly.</ToolTip>
+      <Index>9010</Index>
+      <Code><![CDATA[Measure.ExtentsHeight]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Work Features</Category>
+      <Name>WorkPlane.FlipNormal</Name>
+      <ToolTip>Flip the normal of the workplane, if it is not in the general direction of the -Z axis</ToolTip>
+      <Index>10000</Index>
+      <Code><![CDATA[WorkPlane.FlipNormal("Work Plane1", "-Z")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Work Features</Category>
+      <Name>Sketch.Redefine</Name>
+      <ToolTip>Redefine the parent inputs that define a sketch (plane, origin and axis)</ToolTip>
+      <Index>10001</Index>
+      <Code><![CDATA[Sketch.Redefine("Sketch2", planeName, originName, axisName, AxisIsX := True, NaturalAxisDirection := True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Form</Name>
+      <ToolTip>Show a form that is defined in this document.</ToolTip>
+      <Index>23000</Index>
+      <Code><![CDATA[iLogicForm.Show("Form 1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Form (non-modal)</Name>
+      <ToolTip>Show a form which allows you to run other commands while it is visible.</ToolTip>
+      <Index>23001</Index>
+      <Code><![CDATA[iLogicForm.Show("Form 1", FormMode.NonModal)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Form (modal)</Name>
+      <ToolTip>Show a form which prevents you from running other commands while it is visible.</ToolTip>
+      <Index>23002</Index>
+      <Code><![CDATA[iLogicForm.Show("Form 1", FormMode.Modal)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Global Form</Name>
+      <ToolTip>Show a form that is stored with the Global Forms.</ToolTip>
+      <Index>23003</Index>
+      <Code><![CDATA[iLogicForm.ShowGlobal("Form 1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Global Form (non-modal)</Name>
+      <ToolTip>Show a global form which allows you to run other commands while it is visible.</ToolTip>
+      <Index>23004</Index>
+      <Code><![CDATA[iLogicForm.ShowGlobal("Form 1", FormMode.NonModal)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Forms</Category>
+      <Name>Show Global Form (modal)</Name>
+      <ToolTip>Show a global form which prevents you from running other commands while it is visible.</ToolTip>
+      <Index>23005</Index>
+      <Code><![CDATA[iLogicForm.ShowGlobal("Form 1", FormMode.Modal)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Show</Name>
+      <ToolTip>MessageBox.Show("Message", "Title")</ToolTip>
+      <Index>11000</Index>
+      <Code><![CDATA[MessageBox.Show("Message", "Title")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>OK button</Name>
+      <ToolTip>,MessageBoxButtons.OK</ToolTip>
+      <Index>11001</Index>
+      <Code><![CDATA[,MessageBoxButtons.OK]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>OKCancel buttons</Name>
+      <ToolTip>,MessageBoxButtons.OKCancel</ToolTip>
+      <Index>11002</Index>
+      <Code><![CDATA[,MessageBoxButtons.OKCancel]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>RetryCancel buttons</Name>
+      <ToolTip>,MessageBoxButtons.RetryCancel</ToolTip>
+      <Index>11003</Index>
+      <Code><![CDATA[,MessageBoxButtons.RetryCancel]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>YesNo buttons</Name>
+      <ToolTip>,MessageBoxButtons.YesNo</ToolTip>
+      <Index>11004</Index>
+      <Code><![CDATA[,MessageBoxButtons.YesNo]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>YesNoCancel buttons</Name>
+      <ToolTip>,MessageBoxButtons.YesNoCancel</ToolTip>
+      <Index>11005</Index>
+      <Code><![CDATA[,MessageBoxButtons.YesNoCancel]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>AbortRetryIgnore buttons</Name>
+      <ToolTip>,MessageBoxButtons.AbortRetryIgnore</ToolTip>
+      <Index>11006</Index>
+      <Code><![CDATA[,MessageBoxButtons.AbortRetryIgnore]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Error Icon</Name>
+      <ToolTip>,MessageBoxIcon.Error</ToolTip>
+      <Index>11007</Index>
+      <Code><![CDATA[,MessageBoxIcon.Error]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Exclamation Icon</Name>
+      <ToolTip>,MessageBoxIcon.Exclamation</ToolTip>
+      <Index>11008</Index>
+      <Code><![CDATA[,MessageBoxIcon.Exclamation]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Information Icon</Name>
+      <ToolTip>,MessageBoxIcon.Information</ToolTip>
+      <Index>11009</Index>
+      <Code><![CDATA[,MessageBoxIcon.Information]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>None Icon</Name>
+      <ToolTip>,MessageBoxIcon.None</ToolTip>
+      <Index>11010</Index>
+      <Code><![CDATA[,MessageBoxIcon.None]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Question Icon</Name>
+      <ToolTip>,MessageBoxIcon.Question</ToolTip>
+      <Index>11011</Index>
+      <Code><![CDATA[,MessageBoxIcon.Question]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Stop Icon</Name>
+      <ToolTip>,MessageBoxIcon.Stop</ToolTip>
+      <Index>11012</Index>
+      <Code><![CDATA[,MessageBoxIcon.Stop]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Warning Icon</Name>
+      <ToolTip>,MessageBoxIcon.Warning</ToolTip>
+      <Index>11013</Index>
+      <Code><![CDATA[,MessageBoxIcon.Warning]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Button1 default</Name>
+      <ToolTip>,MessageBoxDefaultButton.Button1</ToolTip>
+      <Index>11014</Index>
+      <Code><![CDATA[,MessageBoxDefaultButton.Button1]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Button2 default</Name>
+      <ToolTip>,MessageBoxDefaultButton.Button2</ToolTip>
+      <Index>11015</Index>
+      <Code><![CDATA[,MessageBoxDefaultButton.Button2]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>Button3 default</Name>
+      <ToolTip>,MessageBoxDefaultButton.Button3</ToolTip>
+      <Index>11016</Index>
+      <Code><![CDATA[,MessageBoxDefaultButton.Button3]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>InputBox</Name>
+      <ToolTip>Prompt the user to type in an input string</ToolTip>
+      <Index>11017</Index>
+      <Code><![CDATA[myparam = InputBox("Prompt", "Title", "Default Entry")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>InputListBox</Name>
+      <ToolTip>Display a Dialog with a list box to select an item from.</ToolTip>
+      <Index>11018</Index>
+      <Code><![CDATA[d0 = InputListBox("Prompt", MultiValue.List("d0"), d0, Title := "Title", ListName := "List")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>MessageBox</Category>
+      <Name>InputRadioBox</Name>
+      <ToolTip>Select one of two choices.  Gives you a boolean (True/False) value.</ToolTip>
+      <Index>11019</Index>
+      <Code><![CDATA[booleanParam = InputRadioBox("Prompt", "Button1 Label", "Button2 Label", booleanParam, Title := "Title")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>Path</Name>
+      <ToolTip>Get the path (directory name) of the document that contains this rule</ToolTip>
+      <Index>12000</Index>
+      <Code><![CDATA[ThisDoc.Path]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>FileName</Name>
+      <ToolTip>Get the filename (without extension) of the document that contains this rule</ToolTip>
+      <Index>12001</Index>
+      <Code><![CDATA[ThisDoc.FileName(False) 'without extension]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>PathAndFileName</Name>
+      <ToolTip>Get the full directory and filename (False = without extension) of the document that contains this rule</ToolTip>
+      <Index>12002</Index>
+      <Code><![CDATA[ThisDoc.PathAndFileName(False)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>ChangeExtension</Name>
+      <ToolTip>Get the full directory and filename, (with a changed extension) of the document that contains this rule</ToolTip>
+      <Index>12003</Index>
+      <Code><![CDATA[changedName = ThisDoc.ChangeExtension(".new")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>WorkspacePath</Name>
+      <ToolTip>Get the current project workspace directory</ToolTip>
+      <Index>12004</Index>
+      <Code><![CDATA[ThisDoc.WorkspacePath()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>Launch Document</Name>
+      <ToolTip>Launch or open another document in its native application</ToolTip>
+      <Index>12005</Index>
+      <Code><![CDATA[ThisDoc.Launch("path\file.ext")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>ThisDoc.Save</Name>
+      <ToolTip>Save this Inventor document (the one that contains this rule)</ToolTip>
+      <Index>12006</Index>
+      <Code><![CDATA[ThisDoc.Save
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>UpdateWhenDone</Name>
+      <ToolTip>Update the document after running this rule.  Same as Inventor Update</ToolTip>
+      <Index>12007</Index>
+      <Code><![CDATA[iLogicVb.UpdateWhenDone = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>RuleParametersOutput</Name>
+      <ToolTip>Output parameter values from the rule to the model. Use this before DocumentUpdate</ToolTip>
+      <Index>12008</Index>
+      <Code><![CDATA[RuleParametersOutput()
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>DocumentUpdate</Name>
+      <ToolTip>Immediately Update the document that the rule is in</ToolTip>
+      <Index>12009</Index>
+      <Code><![CDATA[InventorVb.DocumentUpdate()
+
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>DocumentUpdate(False)</Name>
+      <ToolTip>Immediately Update the document that the rule is in.  Don't update the display</ToolTip>
+      <Index>12010</Index>
+      <Code><![CDATA[InventorVb.DocumentUpdate(False)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>Display Only Update</Name>
+      <ToolTip>Only update the display</ToolTip>
+      <Index>12011</Index>
+      <Code><![CDATA[ThisApplication.ActiveView.Update()
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>CheckParameters</Name>
+      <ToolTip>Make sure parameters are available (for skeleton modeling)</ToolTip>
+      <Index>12012</Index>
+      <Code><![CDATA[InventorVb.CheckParameters("")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Document</Category>
+      <Name>File SaveAs</Name>
+      <ToolTip>Create a SaveAs copy of the document containing this rule.
+True = Save As Copy (don't open new file)
+False = Save As (load new file)
+Supports .bmp, jpg, dwf, etc</ToolTip>
+      <Index>12013</Index>
+      <Code><![CDATA[ThisDoc.Document.SaveAs(NewFileNameAndExtension , True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RunRule</Name>
+      <ToolTip>Run another rule from this one</ToolTip>
+      <Index>13000</Index>
+      <Code><![CDATA[iLogicVb.RunRule("ruleName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RunRule (with map)</Name>
+      <ToolTip>Run another rule from this one, passing an argument map</ToolTip>
+      <Index>13008</Index>
+      <Code><![CDATA[Dim map As Inventor.NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+map.Add("Arg1", "Arg1Value")
+iLogicVb.RunRule("ruleName", map)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RunRule in Component</Name>
+      <ToolTip>Run another rule in a component in an assembly</ToolTip>
+      <Index>13007</Index>
+      <Code><![CDATA[iLogicVb.RunRule("PartA:1", "ruleName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RunExternalRule</Name>
+      <ToolTip>Run an external rule, in an external text file</ToolTip>
+      <Index>13001</Index>
+      <Code><![CDATA[iLogicVb.RunExternalRule("ruleFileName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RunMacro</Name>
+      <ToolTip>Run a VBA macro</ToolTip>
+      <Index>13002</Index>
+      <Code><![CDATA[InventorVb.RunMacro("projectName", "moduleName", "macroName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>AddVbRule</Name>
+      <ToolTip>Add a "Straight VB" rule containing code to be used in this rule</ToolTip>
+      <Index>13003</Index>
+      <Code><![CDATA[AddVbRule "RuleName"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>AddReference</Name>
+      <ToolTip>Add a reference to an external DLL.</ToolTip>
+      <Index>13004</Index>
+      <Code><![CDATA[AddReference "fileName.dll"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>AddVbFile</Name>
+      <ToolTip>Add an external VB file containing Straight VB code to be used in this rule</ToolTip>
+      <Index>13005</Index>
+      <Code><![CDATA[AddVbFile "fileName.vb"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>AddResources</Name>
+      <ToolTip>Add an external resources file, to be used in this rule (specify path is supported)</ToolTip>
+      <Index>13006</Index>
+      <Code><![CDATA[AddResources "fileName.resources"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Run Other</Category>
+      <Name>RuleArguments</Name>
+      <ToolTip>Access the value of an argument passed into the rule via a NameValueMap</ToolTip>
+      <Index>13009</Index>
+      <Code><![CDATA[arg1Value = RuleArguments("Arg1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>BOM</Category>
+      <Name>Export</Name>
+      <ToolTip>Export the BOM view to an Excel worksheet (see Inventor API for other formats)</ToolTip>
+      <Index>14000</Index>
+      <Code><![CDATA[ThisBOM.Export("Parts Only", "fileName", kMicrosoftExcelFormat)
+'kMicrosoftAccessFormat			= Microsoft Access
+'kMicrosoftExcelFormat			= Microsoft Excel
+'kdBASEIIIFormat				= dBASE III
+'kdBASEIVFormat				= dBASE IV
+'kTextFileTabDelimitedFormat		= Text File Tab Delimited
+'kTextFileCommaDelimitedFormat		= Text File Comma Delimited
+'kUnicodeTextFileTabDelimitedFormat	= Unicode Text File Tab Delimited
+'kUnicodeTextFileCommaDelimitedFormat	= Unicode Text File Comma Delimited
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>BOM</Category>
+      <Name>OverrideQuantity</Name>
+      <ToolTip>Override the quantity shown in the BOM
+Example: ThisBOM.OverrideQuantity("Model Data", "Bushing", 4)</ToolTip>
+      <Index>14001</Index>
+      <Code><![CDATA[ThisBOM.OverrideQuantity("Model Data", partNumber, quantity)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>BOM</Category>
+      <Name>CalculateQuantity</Name>
+      <ToolTip>Reset BOM quantity to calculate automatically (instead of override)
+</ToolTip>
+      <Index>14002</Index>
+      <Code><![CDATA[quantity = ThisBOM.CalculateQuantity("Model Data", partNumber)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>IsNumeric</Name>
+      <ToolTip>Test if a string holds a valid number</ToolTip>
+      <Index>15000</Index>
+      <Code><![CDATA[IsNumeric(aString)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>MinOfMany</Name>
+      <ToolTip>Get the minimum of 3 or more values</ToolTip>
+      <Index>15001</Index>
+      <Code><![CDATA[MinOfMany(d0, d1, d2, etc)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>MaxOfMany</Name>
+      <ToolTip>Get the maximum of 3 or more values</ToolTip>
+      <Index>15002</Index>
+      <Code><![CDATA[MaxOfMany(d0, d1, d2, etc)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Round</Name>
+      <ToolTip>Round a number to the closest integer (whole number).</ToolTip>
+      <Index>15003</Index>
+      <Code><![CDATA[Round()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Round decimal precision</Name>
+      <ToolTip>Round a number to a specified number of decimal places.</ToolTip>
+      <Index>15004</Index>
+      <Code><![CDATA[Round(d0, 3)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Round Closest to Increment</Name>
+      <ToolTip>Round a value to the closest nominal increment specified.
+roundedClosest = round(round(d0,4) / inc) * inc</ToolTip>
+      <Index>15005</Index>
+      <Code><![CDATA[inc = .125 ' rounding increment ( .125, .25, .5, etc)
+roundedClosest = round(round(d0,4) / inc) * inc
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Round Up to Increment</Name>
+      <ToolTip>Round a value up to the closest nominal increment specified.
+roundedUp = ceil(round(d0,4) / inc) * inc</ToolTip>
+      <Index>15006</Index>
+      <Code><![CDATA[inc = .125 ' rounding increment ( .125, .25, .5, etc)
+roundedUp = ceil(round(d0,4) / inc) * inc]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Round Down to Increment</Name>
+      <ToolTip>Round a value down to the closest nominal increment specified.
+roundedDown = floor(round(d0,4) / inc) * inc</ToolTip>
+      <Index>15007</Index>
+      <Code><![CDATA[inc = .125 ' rounding increment ( .125, .25, .5, etc)
+roundedDown = floor(round(d0,4) / inc) * inc]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Ceil</Name>
+      <ToolTip>Round a number up to the closest whole number</ToolTip>
+      <Index>15008</Index>
+      <Code><![CDATA[Ceil()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Floor</Name>
+      <ToolTip>Round a number down to the closest whole number</ToolTip>
+      <Index>15009</Index>
+      <Code><![CDATA[Floor()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Sin</Name>
+      <ToolTip>Sine of an angle (angle in radians)</ToolTip>
+      <Index>15010</Index>
+      <Code><![CDATA[Sin()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Cos</Name>
+      <ToolTip>Cosine of an angle (angle in radians)</ToolTip>
+      <Index>15012</Index>
+      <Code><![CDATA[Cos()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Tan</Name>
+      <ToolTip>Tangent of an angle (angle in radians)
+(ex.  y = Tan(22.5 * PI/180) * x</ToolTip>
+      <Index>15013</Index>
+      <Code><![CDATA[Tan()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>PI</Name>
+      <ToolTip>= 3.141592654</ToolTip>
+      <Index>15014</Index>
+      <Code><![CDATA[PI]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Sqrt</Name>
+      <ToolTip>Square root</ToolTip>
+      <Index>15015</Index>
+      <Code><![CDATA[Sqrt()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Abs</Name>
+      <ToolTip>Abs(parameter or variable name)
+Get the absolute value of the specified numeric value.
+</ToolTip>
+      <Index>15011</Index>
+      <Code><![CDATA[Abs()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Sign</Name>
+      <ToolTip>Return -1 if the number is less than zero, 0 if it is equal to zero, 1 if greater than zero</ToolTip>
+      <Index>15016</Index>
+      <Code><![CDATA[Sign()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Int</Name>
+      <ToolTip>Remove the fractional part of a number (this would convert -4.2 to -5)</ToolTip>
+      <Index>15017</Index>
+      <Code><![CDATA[Int()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Fix</Name>
+      <ToolTip>Remove the fractional part of a number (this would convert -4.2 to -4)</ToolTip>
+      <Index>15018</Index>
+      <Code><![CDATA[Fix()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Log10</Name>
+      <ToolTip>Base-10 Logarithm</ToolTip>
+      <Index>15019</Index>
+      <Code><![CDATA[Log10()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Ln</Name>
+      <ToolTip>Natural Logarithm</ToolTip>
+      <Index>15020</Index>
+      <Code><![CDATA[Ln()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Pow</Name>
+      <ToolTip>x to the power y</ToolTip>
+      <Index>15021</Index>
+      <Code><![CDATA[Pow(x, y)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Min</Name>
+      <ToolTip>Return the minimum of two numbers</ToolTip>
+      <Index>15022</Index>
+      <Code><![CDATA[Min(d0, d1)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>Max</Name>
+      <ToolTip>Return the maximum of two numbers</ToolTip>
+      <Index>15023</Index>
+      <Code><![CDATA[Max(d0, d1)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>CDbl</Name>
+      <ToolTip>Convert a string or number to a Double</ToolTip>
+      <Index>15024</Index>
+      <Code><![CDATA[CDbl()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Math</Category>
+      <Name>EqualWithinTolerance</Name>
+      <ToolTip>Test if two numbers are approximately equal</ToolTip>
+      <Index>15025</Index>
+      <Code><![CDATA[EqualWithinTolerance(a, b, 0.001)]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Left</Name>
+      <ToolTip>Returns the specified number of characters from the left (start) of a string.
+Left("This is a string", 4) returns "This".</ToolTip>
+      <Index>16000</Index>
+      <Code><![CDATA[Left()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Compare</Name>
+      <ToolTip>Compares two strings.  Useful for ignoring lowercase/uppercase differences.
+Returns 0 if the strings are equal.
+String.Compare("Test", "test", True)  returns 0.</ToolTip>
+      <Index>16001</Index>
+      <Code><![CDATA[String.Compare()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Len</Name>
+      <ToolTip>Returns the length of a string.
+Len("This is a string") returns 16.</ToolTip>
+      <Index>16002</Index>
+      <Code><![CDATA[Len()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Right</Name>
+      <ToolTip>Returns the specified number of characters from the right (end) of a string.
+Right("This is a string", 6) returns "string".</ToolTip>
+      <Index>16003</Index>
+      <Code><![CDATA[Right()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Mid</Name>
+      <ToolTip>Returns a substring from a string, specified as the starting position (counting from 1) and the number of characters.
+Mid("This is a string", 6, 4) returns "is a".</ToolTip>
+      <Index>16004</Index>
+      <Code><![CDATA[Mid()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>LCase</Name>
+      <ToolTip>Returns the lower-case conversion of a string.
+LCase("THIS IS A STRING") returns "this is a string".</ToolTip>
+      <Index>16005</Index>
+      <Code><![CDATA[LCase()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>UCase</Name>
+      <ToolTip>Returns the upper-case conversion of a string.
+UCase("This is a string") returns "THIS IS A STRING".</ToolTip>
+      <Index>16006</Index>
+      <Code><![CDATA[UCase()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>CStr</Name>
+      <ToolTip>Converts a value into a string.
+CStr(6.25) returns "6.25"</ToolTip>
+      <Index>16007</Index>
+      <Code><![CDATA[CStr()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>FormatAsFraction</Name>
+      <ToolTip>Convert a number into a string, as a standard fraction (1/2's, 1/4's etc.)
+FormatAsFraction(5.375) returns "5 3/8"
+(Numbers must be rounded to fractional equivalent first.)</ToolTip>
+      <Index>16008</Index>
+      <Code><![CDATA[fractionString = FormatAsFraction(d0)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>RoundToFraction</Name>
+      <ToolTip>Convert a number into a string, as a standard fraction (1/2's, 1/4's etc.)
+RoundToFraction(5.3752, 1/8, RoundingMethod.Round) returns "5 3/8"
+(Rounds numbers to the closest fractional value automatically.)</ToolTip>
+      <Index>16014</Index>
+      <Code><![CDATA[fractionString = RoundToFraction(d0, 1/8, RoundingMethod.Round)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>RoundToFraction (rounding up)</Name>
+      <ToolTip>Convert a number into a string, as a standard fraction (1/2's, 1/4's etc.)
+RoundToFraction(5.37, 1/8, RoundingMethod.RoundUp) returns "5 3/8"
+(Rounds numbers up to a fractional value automatically.)</ToolTip>
+      <Index>16015</Index>
+      <Code><![CDATA[fractionString = RoundToFraction(d0, 1/8, RoundingMethod.RoundUp)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>RoundToFraction (rounding down)</Name>
+      <ToolTip>Convert a number into a string, as a standard fraction (1/2's, 1/4's etc.)
+RoundToFraction(5.26, 1/4, RoundingMethod.RoundDown) returns "5 1/4"
+(Rounds numbers down to a fractional value automatically.)</ToolTip>
+      <Index>16016</Index>
+      <Code><![CDATA[fractionString = RoundToFraction(d0, 1/8, RoundingMethod.RoundDown)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Now()</Name>
+      <ToolTip>Returns a string containing the Current Date and Time</ToolTip>
+      <Index>16009</Index>
+      <Code><![CDATA[Now()]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>DateString</Name>
+      <ToolTip>Returns the current Date</ToolTip>
+      <Index>16010</Index>
+      <Code><![CDATA[DateString]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>TimeString</Name>
+      <ToolTip>Returns the current time</ToolTip>
+      <Index>16011</Index>
+      <Code><![CDATA[TimeString]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Val(string)</Name>
+      <ToolTip>Extract a numerical value from a string.
+Only the first number occurring will be retrieved.
+Val("100.50_sometext_23.45") will return 100.50</ToolTip>
+      <Index>16012</Index>
+      <Code><![CDATA[d0 = Val(mystring)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>CDblAny(string)</Name>
+      <ToolTip>Extract a numerical value from a string.
+This allows either a period or a comma as a decimal separator.</ToolTip>
+      <Index>16017</Index>
+      <Code><![CDATA[d0 = CDblAny(mystring)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Strings</Category>
+      <Name>Read All Text</Name>
+      <ToolTip>Read the contents of a text file into a string variable.
+Requires a text file name (with path) as input.</ToolTip>
+      <Index>16013</Index>
+      <Code><![CDATA[FileContents = My.Computer.FileSystem.ReadAllText("c:\SomeTextFile.txt")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>SharedVariable</Name>
+      <ToolTip>Set or Get the value of a shared variable
+(This is a temporary variable, not saved in any file.)</ToolTip>
+      <Index>17000</Index>
+      <Code><![CDATA[SharedVariable("VariableName")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>SharedVariable.Exists</Name>
+      <ToolTip>Check if a shared variable ("VariableName") exists.</ToolTip>
+      <Index>17001</Index>
+      <Code><![CDATA[SharedVariable.Exists("VariableName")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>SharedVariable.Remove</Name>
+      <ToolTip>Remove a shared variable by name</ToolTip>
+      <Index>17002</Index>
+      <Code><![CDATA[SharedVariable.Remove("VariableName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>SharedVariable.RemoveAll</Name>
+      <ToolTip>Remove all shared variables</ToolTip>
+      <Index>17003</Index>
+      <Code><![CDATA[SharedVariable.RemoveAll()
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>New Double Array</Name>
+      <ToolTip>Define a new Double type array and set initial values</ToolTip>
+      <Index>17004</Index>
+      <Code><![CDATA[MyDoubleValues = new double(){1.2,2.2,3.3}
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>New Integer Array</Name>
+      <ToolTip>Define a new Integer type array and set initial values</ToolTip>
+      <Index>17005</Index>
+      <Code><![CDATA[MyIntegerValues = new integer(){1,2,3}
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>New String Array</Name>
+      <ToolTip>Define a new String type array and set initial values</ToolTip>
+      <Index>17006</Index>
+      <Code><![CDATA[MyStringValues = new string(){"hello", "world"}
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>New Object Array</Name>
+      <ToolTip>Define a new object type array and set initial values</ToolTip>
+      <Index>17007</Index>
+      <Code><![CDATA[MyObjectValues = new object(){"string", true, 1.234}
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>New ArrayList</Name>
+      <ToolTip>Define a new ArrayList type variable and add some values to it.</ToolTip>
+      <Index>17008</Index>
+      <Code><![CDATA[Dim MyArrayList As New ArrayList
+MyArrayList.add("Hello World")
+MyArrayList.add(1.234)
+MyArrayList.add(True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Variables</Category>
+      <Name>For Each Loop</Name>
+      <ToolTip>Loop thru the values in an Array or ArrayList variable</ToolTip>
+      <Index>17009</Index>
+      <Code><![CDATA[for each oval in MyVariableHere
+msgbox(oval)
+next
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Name</Name>
+      <ToolTip>Get the current Material Name</ToolTip>
+      <Index>18000</Index>
+      <Code><![CDATA[materialName = ThisDoc.Document.ComponentDefinition.Material.Name
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Density</Name>
+      <ToolTip>Get the current Material Density [g/cm^3]</ToolTip>
+      <Index>18001</Index>
+      <Code><![CDATA[materialDensity = ThisDoc.Document.ComponentDefinition.Material.Density
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Linear Expansion</Name>
+      <ToolTip>Get the current Material Linear Expansion [GPa]</ToolTip>
+      <Index>18002</Index>
+      <Code><![CDATA[materialLinearExpansion = ThisDoc.Document.ComponentDefinition.Material.LinearExpansion
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Poissons Ratio</Name>
+      <ToolTip>Get the current Material Poisson's Ratio</ToolTip>
+      <Index>18003</Index>
+      <Code><![CDATA[poissonsRatio = ThisDoc.Document.ComponentDefinition.Material.PoissonsRatio
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Specific Heat</Name>
+      <ToolTip>Get the current Material Specific Heat [J/(kg*K)]</ToolTip>
+      <Index>18004</Index>
+      <Code><![CDATA[specificHeat = ThisDoc.Document.ComponentDefinition.Material.SpecificHeat
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Thermal Conductivity</Name>
+      <ToolTip>Get the current Material Thermal Conductivity [W/(m*K)]</ToolTip>
+      <Index>18005</Index>
+      <Code><![CDATA[conductivity = ThisDoc.Document.ComponentDefinition.Material.ThermalConductivity
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Ultimate Tensile Strength</Name>
+      <ToolTip>Get the current Material Ultimate Tensile Strength [MPa]</ToolTip>
+      <Index>18006</Index>
+      <Code><![CDATA[tensileStrength = ThisDoc.Document.ComponentDefinition.Material.UltimateTensileStrength
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Yield Strength</Name>
+      <ToolTip>Get the current Material Yield Strength [MPa]</ToolTip>
+      <Index>18007</Index>
+      <Code><![CDATA[yieldStrength = ThisDoc.Document.ComponentDefinition.Material.YieldStrength
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Material Properties</Category>
+      <Name>Youngs Modulus</Name>
+      <ToolTip>Get the current Material Young's Modulus [GPa]</ToolTip>
+      <Index>18008</Index>
+      <Code><![CDATA[youngsModulus = ThisDoc.Document.ComponentDefinition.Material.YoungsModulus
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>Set Active Style</Name>
+      <ToolTip>Set the active sheet metal style</ToolTip>
+      <Index>19000</Index>
+      <Code><![CDATA[SheetMetal.SetActiveStyle("styleName")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>Get Active Style</Name>
+      <ToolTip>Get the active sheet metal style</ToolTip>
+      <Index>19002</Index>
+      <Code><![CDATA[currentStyle = SheetMetal.GetActiveStyle()
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>Get Active KFactor</Name>
+      <ToolTip>Get the active K Factor</ToolTip>
+      <Index>19004</Index>
+      <Code><![CDATA[kFactor = SheetMetal.ActiveKFactor
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>FlatExtentsLength</Name>
+      <ToolTip>Get the length of the flat pattern</ToolTip>
+      <Index>19005</Index>
+      <Code><![CDATA[extents_length = SheetMetal.FlatExtentsLength
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>FlatExtentsWidth</Name>
+      <ToolTip>Get the width of the flat pattern</ToolTip>
+      <Index>19006</Index>
+      <Code><![CDATA[extents_width = SheetMetal.FlatExtentsWidth
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Sheet Metal</Category>
+      <Name>FlatExtentsArea</Name>
+      <ToolTip>Get the area (length * width) of the flat pattern</ToolTip>
+      <Index>19007</Index>
+      <Code><![CDATA[extents_area = SheetMetal.FlatExtentsArea
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>ThisDrawing</Name>
+      <ToolTip>Access the drawing that contains this rule</ToolTip>
+      <Index>21001</Index>
+      <Code><![CDATA[ThisDrawing]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>ActiveSheet</Name>
+      <ToolTip>Access the active sheet in this drawing</ToolTip>
+      <Index>21003</Index>
+      <Code><![CDATA[ActiveSheet]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Activate a Sheet</Name>
+      <ToolTip>Make another sheet active.</ToolTip>
+      <Index>21025</Index>
+      <Code><![CDATA[ActiveSheet = ThisDrawing.Sheet("Sheet:2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Sheet Name</Name>
+      <ToolTip>Get the name of the active sheet.</ToolTip>
+      <Index>21002</Index>
+      <Code><![CDATA[ActiveSheet.Name]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Sheet Size</Name>
+      <ToolTip>Get the size (e.g. "A", "B", "A4", "A3") of the sheet.</ToolTip>
+      <Index>21004</Index>
+      <Code><![CDATA[ActiveSheet.Size]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Sheet Width</Name>
+      <ToolTip>Get the width of the sheet</ToolTip>
+      <Index>21005</Index>
+      <Code><![CDATA[ActiveSheet.Width]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Sheet Height</Name>
+      <ToolTip>Get the height of the sheet</ToolTip>
+      <Index>21006</Index>
+      <Code><![CDATA[ActiveSheet.Height]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Sheet Size</Name>
+      <ToolTip>Change the sheet size, and optionally ensure that table items remain attached to the top or right borders."</ToolTip>
+      <Index>21023</Index>
+      <Code><![CDATA[ActiveSheet.ChangeSize("A3", MoveBorderItems := True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Sheet Size (custom)</Name>
+      <ToolTip>Change the sheet to a custom size.</ToolTip>
+      <Index>21024</Index>
+      <Code><![CDATA[ActiveSheet.ChangeSize(28.0, 20.0, MoveBorderItems := True)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Drawing View</Name>
+      <ToolTip>Get a view on the drawing sheet</ToolTip>
+      <Index>21007</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1")]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View Width</Name>
+      <ToolTip>Get the width of a drawing view</ToolTip>
+      <Index>21009</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Width]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View Height</Name>
+      <ToolTip>Get the height of a drawing view</ToolTip>
+      <Index>21008</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Height]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View Scale</Name>
+      <ToolTip>Get or set the scale of a view, as a number.</ToolTip>
+      <Index>21010</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Scale]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View Scale (string)</Name>
+      <ToolTip>Get or set the scale of a view as a text string (e.g. "1:2").</ToolTip>
+      <Index>21011</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").ScaleString]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View Set Center</Name>
+      <ToolTip>Set the center point (move the view).
+Coordinates based on (0,0) in lower left corner of the drawing.</ToolTip>
+      <Index>21014</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").SetCenter(centerX, centerY)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>View from Corner</Name>
+      <ToolTip>Set the spacing between a corner of this view and a the top left corner of the drawing.
+Note: You can also specify SheetCorner.BottomLeft, SheetCorner.TopRight or SheetCorner.BottomRight</ToolTip>
+      <Index>21015</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").SetSpacingToCorner(distanceX, distanceY, SheetCorner.TopLeft)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Spacing to other View</Name>
+      <ToolTip>Set the spacing between the edge of this view and the edge of another view.
+(Move this view.)  Use a positive number to place this view to the right or above the other view.
+Use a negative number to place this view to the left or below the other view.
+</ToolTip>
+      <Index>21016</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW2").SpacingBetween("VIEW1") = 1.2
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>ResourceFileName</Name>
+      <ToolTip>Specify another drawing to use as a source for titleblocks and borders.</ToolTip>
+      <Index>21017</Index>
+      <Code><![CDATA[ThisDrawing.ResourceFileName = "DrawingResources1.idw"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>KeepExtraResources</Name>
+      <ToolTip>If this is False, copies of resources from ResourceFileName will not be kept in the current drawing.</ToolTip>
+      <Index>21018</Index>
+      <Code><![CDATA[ThisDrawing.KeepExtraResources = False
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Title Block</Name>
+      <ToolTip>Change the title block.</ToolTip>
+      <Index>21019</Index>
+      <Code><![CDATA[ActiveSheet.TitleBlock = "My Title Block"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Title Block (2)</Name>
+      <ToolTip>Use a title block that requires prompted entries.</ToolTip>
+      <Index>21020</Index>
+      <Code><![CDATA[ActiveSheet.SetTitleBlock("Other Title Block", "promptedEntry1", "promptedEntry2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Border</Name>
+      <ToolTip>Change the border.</ToolTip>
+      <Index>21021</Index>
+      <Code><![CDATA[ActiveSheet.Border = "My Border"
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Change Border (2)</Name>
+      <ToolTip>Use a border that requires prompted entries.</ToolTip>
+      <Index>21022</Index>
+      <Code><![CDATA[ActiveSheet.SetBorder("Other Border", "promptedEntry1", "promptedEntry2")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Reattach Balloons</Name>
+      <ToolTip>Reattach balloons in a view, after changes to the model.</ToolTip>
+      <Index>21012</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Balloons.Reattach
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Balloon Exclude</Name>
+      <ToolTip>Specify a component that you don't want to balloon.</ToolTip>
+      <Index>21013</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Balloons.DoNotAttachToComponent("Pin:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Drawing</Category>
+      <Name>Balloon Include</Name>
+      <ToolTip>Specify one of the components that you want to balloon.
+If you specify one, then you must specify all (with additional statements like this).  No other components will be ballooned.</ToolTip>
+      <Index>21026</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").Balloons.AttachToComponent("Pin:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Suppress a View</Name>
+      <ToolTip>Suppress (don't show) a view.</ToolTip>
+      <Index>22001</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW2").View.Suppressed = True
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Hide a Layer</Name>
+      <ToolTip>Make a layer invisible.</ToolTip>
+      <Index>22002</Index>
+      <Code><![CDATA[ThisDrawing.Document.StylesManager.Layers("Dimension (ANSI)").Visible = False
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Drawing Document</Name>
+      <ToolTip>Get the drawing document (Inventor API type: DrawingDocument).</ToolTip>
+      <Index>22003</Index>
+      <Code><![CDATA[ThisDrawing.Document]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Drawing Sheet</Name>
+      <ToolTip>Get the sheet (Inventor API type: Sheet)</ToolTip>
+      <Index>22004</Index>
+      <Code><![CDATA[ ActiveSheet.Sheet]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Drawing View</Name>
+      <ToolTip>Get the view object (Inventor API type: DrawingView).</ToolTip>
+      <Index>22005</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW2").View]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Model Document</Name>
+      <ToolTip>Get the first model document shown in this drawing (Inventor API type: Document).</ToolTip>
+      <Index>22010</Index>
+      <Code><![CDATA[doc = ThisDrawing.ModelDocument
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Model Document (view)</Name>
+      <ToolTip>Get the model document of a view (Inventor API type: Document).</ToolTip>
+      <Index>22006</Index>
+      <Code><![CDATA[ActiveSheet.View("VIEW1").ModelDocument]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Model Document Name</Name>
+      <ToolTip>Get the name of the first model document shown (for use in the Parameter function).</ToolTip>
+      <Index>22007</Index>
+      <Code><![CDATA[modelName = IO.Path.GetFileName(ThisDrawing.ModelDocument.FullFileName)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Model Document Name (view)</Name>
+      <ToolTip>Get the name of the model document shown in a particular view (for use in the Parameter function).</ToolTip>
+      <Index>22008</Index>
+      <Code><![CDATA[modelName = IO.Path.GetFileName(ActiveSheet.View("VIEW1").ModelDocument.FullFileName)
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced Drawing API</Category>
+      <Name>Get a Model Parameter</Name>
+      <ToolTip>Get the value of a paramter from a model document.</ToolTip>
+      <Index>22009</Index>
+      <Code><![CDATA[dwgParam = Parameter(modelName, "d0")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>ThisApplication</Name>
+      <ToolTip>Get the Inventor Application object</ToolTip>
+      <Index>20000</Index>
+      <Code><![CDATA[ThisApplication]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>This Document</Name>
+      <ToolTip>Get the document that contains this rule</ToolTip>
+      <Index>20003</Index>
+      <Code><![CDATA[doc = ThisDoc.Document
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>Automation</Name>
+      <ToolTip>Access the iLogic Automation interface</ToolTip>
+      <Index>20004</Index>
+      <Code><![CDATA[auto = iLogicVb.Automation
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>UserInterfaceManager</Name>
+      <ToolTip>Required to run some commands with the Inventor API</ToolTip>
+      <Index>20005</Index>
+      <Code><![CDATA[ThisApplication.UserInterfaceManager.UserInteractionDisabled = False
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>InventorComponent</Name>
+      <ToolTip>Get direct access to a component
+ compo is of the type Inventor.ComponentOccurrence</ToolTip>
+      <Index>20006</Index>
+      <Code><![CDATA[compo = Component.InventorComponent("PartA:1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>InventorFeature</Name>
+      <ToolTip>Get direct access to a feature
+ feat is of the type Inventor.PartFeature</ToolTip>
+      <Index>20007</Index>
+      <Code><![CDATA[feat = Feature.InventorFeature("Extrusion1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>InventorFeature (in comp.)</Name>
+      <ToolTip>Get direct access to a feature in a component or document</ToolTip>
+      <Index>20008</Index>
+      <Code><![CDATA[feat = Feature.InventorFeature(componentOrDocName, "Extrusion1")
+]]></Code>
+    </CodeSnippet>
+    <CodeSnippet>
+      <Category>Advanced API</Category>
+      <Name>DoubleForEquals Off</Name>
+      <ToolTip>Use Double instead of DoubleForEquals for parameters in this rule.</ToolTip>
+      <Index>20011</Index>
+      <Code><![CDATA[iLogicOption DoubleForEquals Off
+]]></Code>
+    </CodeSnippet>
+  </Snippets>
+</CodeSnippets>
