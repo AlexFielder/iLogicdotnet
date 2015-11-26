@@ -53,6 +53,342 @@ Namespace My
                 Return defaultInstance
             End Get
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Dump iLogic Rules to XML")>  _
+        Public Property ButtonNameDumpiLogicRules() As String
+            Get
+                Return CType(Me("ButtonNameDumpiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonNameDumpiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("DumpiLogicRules")>  _
+        Public Property ButtonInternalNameDumpiLogicRules() As String
+            Get
+                Return CType(Me("ButtonInternalNameDumpiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonInternalNameDumpiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Dump the rules in the currently open file and its children")>  _
+        Public Property ButtonDescrDumpiLogicRules() As String
+            Get
+                Return CType(Me("ButtonDescrDumpiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonDescrDumpiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Dumps the iLogic rules")>  _
+        Public Property ButtonTooltipDumpiLogicRules() As String
+            Get
+                Return CType(Me("ButtonTooltipDumpiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonTooltipDumpiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("SaveRules.ico")>  _
+        Public Property ButtonIconDumpiLogic() As String
+            Get
+                Return CType(Me("ButtonIconDumpiLogic"),String)
+            End Get
+            Set
+                Me("ButtonIconDumpiLogic") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Externalise iLogic Rules")>  _
+        Public Property ButtonNameExternaliseiLogicRules() As String
+            Get
+                Return CType(Me("ButtonNameExternaliseiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonNameExternaliseiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ExternaliseiLogicRules")>  _
+        Public Property ButtonInternalNameExternaliseiLogicRules() As String
+            Get
+                Return CType(Me("ButtonInternalNameExternaliseiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonInternalNameExternaliseiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Put the iLogic Rules in external files")>  _
+        Public Property ButtonDescrExternaliseiLogicRules() As String
+            Get
+                Return CType(Me("ButtonDescrExternaliseiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonDescrExternaliseiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Externalise...")>  _
+        Public Property ButtonTooltipExternaliseiLogicRules() As String
+            Get
+                Return CType(Me("ButtonTooltipExternaliseiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonTooltipExternaliseiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ExternaliseiLogicRules.ico")>  _
+        Public Property ButtonIconExtract() As String
+            Get
+                Return CType(Me("ButtonIconExtract"),String)
+            End Get
+            Set
+                Me("ButtonIconExtract") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Simplify iLogic Rules")>  _
+        Public Property ButtonNameSimplifyiLogicRules() As String
+            Get
+                Return CType(Me("ButtonNameSimplifyiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonNameSimplifyiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("SimplifyiLogicRules")>  _
+        Public Property ButtonInternalNameSimplifyiLogicRules() As String
+            Get
+                Return CType(Me("ButtonInternalNameSimplifyiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonInternalNameSimplifyiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Simplifies the iLogic Rules by refactoring that sh*t")>  _
+        Public Property ButtonDescrSimplifyiLogicRules() As String
+            Get
+                Return CType(Me("ButtonDescrSimplifyiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonDescrSimplifyiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Simplifyyy")>  _
+        Public Property ButtonTooltipSimplifyiLogicRules() As String
+            Get
+                Return CType(Me("ButtonTooltipSimplifyiLogicRules"),String)
+            End Get
+            Set
+                Me("ButtonTooltipSimplifyiLogicRules") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("SimplifyiLogicRules.ico")>  _
+        Public Property ButtonIconSimplify() As String
+            Get
+                Return CType(Me("ButtonIconSimplify"),String)
+            End Get
+            Set
+                Me("ButtonIconSimplify") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("iLogic dot net")>  _
+        Public Property TabName() As String
+            Get
+                Return CType(Me("TabName"),String)
+            End Get
+            Set
+                Me("TabName") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet_Part")>  _
+        Public Property PartRibbonTabNameInternal() As String
+            Get
+                Return CType(Me("PartRibbonTabNameInternal"),String)
+            End Get
+            Set
+                Me("PartRibbonTabNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet")>  _
+        Public Property panelPartName() As String
+            Get
+                Return CType(Me("panelPartName"),String)
+            End Get
+            Set
+                Me("panelPartName") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Partildotnet")>  _
+        Public Property panelPartNameInternal() As String
+            Get
+                Return CType(Me("panelPartNameInternal"),String)
+            End Get
+            Set
+                Me("panelPartNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet_Assembly")>  _
+        Public Property AssemblyRibbonTabNameInternal() As String
+            Get
+                Return CType(Me("AssemblyRibbonTabNameInternal"),String)
+            End Get
+            Set
+                Me("AssemblyRibbonTabNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet")>  _
+        Public Property panelAssemblyName() As String
+            Get
+                Return CType(Me("panelAssemblyName"),String)
+            End Get
+            Set
+                Me("panelAssemblyName") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Assemblyildotnet")>  _
+        Public Property panelAssemblyNameInternal() As String
+            Get
+                Return CType(Me("panelAssemblyNameInternal"),String)
+            End Get
+            Set
+                Me("panelAssemblyNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet_Zerodoc")>  _
+        Public Property ZeroDocRibbonTabNameInternal() As String
+            Get
+                Return CType(Me("ZeroDocRibbonTabNameInternal"),String)
+            End Get
+            Set
+                Me("ZeroDocRibbonTabNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet")>  _
+        Public Property panelZeroDocName() As String
+            Get
+                Return CType(Me("panelZeroDocName"),String)
+            End Get
+            Set
+                Me("panelZeroDocName") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Zerodocildotnet")>  _
+        Public Property panelZeroDocNameInternal() As String
+            Get
+                Return CType(Me("panelZeroDocNameInternal"),String)
+            End Get
+            Set
+                Me("panelZeroDocNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet_Drawing")>  _
+        Public Property DrawingRibbonTabNameInternal() As String
+            Get
+                Return CType(Me("DrawingRibbonTabNameInternal"),String)
+            End Get
+            Set
+                Me("DrawingRibbonTabNameInternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("ildotnet")>  _
+        Public Property panelDrawingName() As String
+            Get
+                Return CType(Me("panelDrawingName"),String)
+            End Get
+            Set
+                Me("panelDrawingName") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Drawingildotnet")>  _
+        Public Property panelDrawingNameInternal() As String
+            Get
+                Return CType(Me("panelDrawingNameInternal"),String)
+            End Get
+            Set
+                Me("panelDrawingNameInternal") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

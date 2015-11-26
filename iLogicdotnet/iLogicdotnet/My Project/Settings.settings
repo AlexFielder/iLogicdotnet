@@ -1,6 +1,90 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" UseMySettingsClassName="true">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="ButtonNameDumpiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dump iLogic Rules to XML</Value>
+    </Setting>
+    <Setting Name="ButtonInternalNameDumpiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">DumpiLogicRules</Value>
+    </Setting>
+    <Setting Name="ButtonDescrDumpiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dump the rules in the currently open file and its children</Value>
+    </Setting>
+    <Setting Name="ButtonTooltipDumpiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dumps the iLogic rules</Value>
+    </Setting>
+    <Setting Name="ButtonIconDumpiLogic" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SaveRules.ico</Value>
+    </Setting>
+    <Setting Name="ButtonNameExternaliseiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Externalise iLogic Rules</Value>
+    </Setting>
+    <Setting Name="ButtonInternalNameExternaliseiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ExternaliseiLogicRules</Value>
+    </Setting>
+    <Setting Name="ButtonDescrExternaliseiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Put the iLogic Rules in external files</Value>
+    </Setting>
+    <Setting Name="ButtonTooltipExternaliseiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Externalise...</Value>
+    </Setting>
+    <Setting Name="ButtonIconExtract" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ExternaliseiLogicRules.ico</Value>
+    </Setting>
+    <Setting Name="ButtonNameSimplifyiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Simplify iLogic Rules</Value>
+    </Setting>
+    <Setting Name="ButtonInternalNameSimplifyiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SimplifyiLogicRules</Value>
+    </Setting>
+    <Setting Name="ButtonDescrSimplifyiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Simplifies the iLogic Rules by refactoring that sh*t</Value>
+    </Setting>
+    <Setting Name="ButtonTooltipSimplifyiLogicRules" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Simplifyyy</Value>
+    </Setting>
+    <Setting Name="ButtonIconSimplify" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SimplifyiLogicRules.ico</Value>
+    </Setting>
+    <Setting Name="TabName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">iLogic dot net</Value>
+    </Setting>
+    <Setting Name="PartRibbonTabNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet_Part</Value>
+    </Setting>
+    <Setting Name="panelPartName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet</Value>
+    </Setting>
+    <Setting Name="panelPartNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Partildotnet</Value>
+    </Setting>
+    <Setting Name="AssemblyRibbonTabNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet_Assembly</Value>
+    </Setting>
+    <Setting Name="panelAssemblyName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet</Value>
+    </Setting>
+    <Setting Name="panelAssemblyNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Assemblyildotnet</Value>
+    </Setting>
+    <Setting Name="ZeroDocRibbonTabNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet_Zerodoc</Value>
+    </Setting>
+    <Setting Name="panelZeroDocName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet</Value>
+    </Setting>
+    <Setting Name="panelZeroDocNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Zerodocildotnet</Value>
+    </Setting>
+    <Setting Name="DrawingRibbonTabNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet_Drawing</Value>
+    </Setting>
+    <Setting Name="panelDrawingName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ildotnet</Value>
+    </Setting>
+    <Setting Name="panelDrawingNameInternal" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Drawingildotnet</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

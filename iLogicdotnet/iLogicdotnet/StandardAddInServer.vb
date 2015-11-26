@@ -3,8 +3,8 @@ Imports System.Runtime.InteropServices
 Imports Microsoft.Win32
 
 Namespace iLogicdotnet
-    <ProgIdAttribute("iLogicdotnet.StandardAddInServer"), _
-    GuidAttribute("71a7b2f1-19fe-43aa-ba19-dd3476802e3b")> _
+    <ProgIdAttribute("iLogicdotnet.StandardAddInServer"),
+    GuidAttribute("71a7b2f1-19fe-43aa-ba19-dd3476802e3b")>
     Public Class StandardAddInServer
         Implements Inventor.ApplicationAddInServer
 
@@ -14,10 +14,9 @@ Namespace iLogicdotnet
         Private ExtractiLogicRulesButton As ButtonDefinition
         Private SimplifyRulesButton As ButtonDefinition
 
-
 #Region "ApplicationAddInServer Members"
 
-        ' This method is called by Inventor when it loads the AddIn. The AddInSiteObject provides access  
+        ' This method is called by Inventor when it loads the AddIn. The AddInSiteObject provides access
         ' to the Inventor Application object. The FirstTime flag indicates if the AddIn is loaded for
         ' the first time. However, with the introduction of the ribbon this argument is always true.
         Public Sub Activate(ByVal addInSiteObject As Inventor.ApplicationAddInSite, ByVal firstTime As Boolean) Implements Inventor.ApplicationAddInServer.Activate
@@ -37,14 +36,14 @@ Namespace iLogicdotnet
                                                               Guid.NewGuid().ToString(),
                                                               My.Settings.ButtonDescrDumpiLogicRules,
                                                               My.Settings.ButtonTooltipDumpiLogicRules,
-                                                              GetICOResource(My.Settings.ButtonIconGraitec32x32),
-                                                              GetICOResource(My.Settings.ButtonIconGraitec64x64))
-            ExtractiLogicRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameExtractiLogicRules,
-                                                              My.Settings.ButtonInternalNameExtractiLogicRules,
+                                                              GetICOResource(My.Settings.ButtonIconDumpiLogic),
+                                                              GetICOResource(My.Settings.ButtonIconDumpiLogic))
+            ExtractiLogicRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameExternaliseiLogicRules,
+                                                              My.Settings.ButtonInternalNameExternaliseiLogicRules,
                                                               CommandTypesEnum.kFileOperationsCmdType,
                                                               Guid.NewGuid().ToString(),
-                                                              My.Settings.ButtonDescrExtractiLogicRules,
-                                                              My.Settings.ButtonTooltipExtractiLogicRules,
+                                                              My.Settings.ButtonDescrExternaliseiLogicRules,
+                                                              My.Settings.ButtonTooltipExternaliseiLogicRules,
                                                               GetICOResource(My.Settings.ButtonIconExtract),
                                                               GetICOResource(My.Settings.ButtonIconExtract))
             SimplifyRulesButton = controlDefs.AddButtonDefinition(My.Settings.ButtonNameSimplifyiLogicRules,
@@ -53,8 +52,8 @@ Namespace iLogicdotnet
                                                               Guid.NewGuid().ToString(),
                                                               My.Settings.ButtonDescrSimplifyiLogicRules,
                                                               My.Settings.ButtonTooltipSimplifyiLogicRules,
-                                                              GetICOResource(My.Settings.ButtonIconGraitec32x32),
-                                                              GetICOResource(My.Settings.ButtonIconGraitec64x64))
+                                                              GetICOResource(My.Settings.ButtonIconDumpiLogic),
+                                                              GetICOResource(My.Settings.ButtonIconDumpiLogic))
             ' Add to the user interface, if it's the first time.
             If firstTime Then
                 AddToUserInterface()
@@ -75,7 +74,7 @@ Namespace iLogicdotnet
             System.GC.WaitForPendingFinalizers()
         End Sub
 
-        ' This property is provided to allow the AddIn to expose an API of its own to other 
+        ' This property is provided to allow the AddIn to expose an API of its own to other
         ' programs. Typically, this  would be done by implementing the AddIn's API
         ' interface in a class and returning that class object through this property.
         Public ReadOnly Property Automation() As Object Implements Inventor.ApplicationAddInServer.Automation
@@ -84,32 +83,83 @@ Namespace iLogicdotnet
             End Get
         End Property
 
-        ' Note:this method is now obsolete, you should use the 
+        ' Note:this method is now obsolete, you should use the
         ' ControlDefinition functionality for implementing commands.
         Public Sub ExecuteCommand(ByVal commandID As Integer) Implements Inventor.ApplicationAddInServer.ExecuteCommand
         End Sub
 
 #End Region
-
+#Region "AddIn-specific"
+        ''' <summary>
+        ''' Returns the relevant resource from the compiled .dll file
+        ''' Means you don't need to Copy local .ico (or any other resource files)!
+        ''' </summary>
+        ''' <param name="icoResourceName"></param>
+        ''' <returns></returns>
+        ''' <remarks></remarks>
+        Private Function GetICOResource(
+                  ByVal icoResourceName As String) As Object
+            Dim assemblyNet As System.Reflection.Assembly =
+              System.Reflection.Assembly.GetExecutingAssembly()
+            Dim stream As System.IO.Stream =
+              assemblyNet.GetManifestResourceStream(icoResourceName)
+            Dim ico As System.Drawing.Icon =
+              New System.Drawing.Icon(stream)
+            Return PictureDispConverter.ToIPictureDisp(ico)
+        End Function
+#End Region
 #Region "User interface definition"
         ' Sub where the user-interface creation is done.  This is called when
         ' the add-in loaded and also if the user interface is reset.
         Private Sub AddToUserInterface()
-            ' This is where you'll add code to add buttons to the ribbon.
+            Dim partRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Part")
+            Dim tabPart As Inventor.RibbonTab = partRibbon.RibbonTabs.Add(My.Settings.TabName,
+                                                                             My.Settings.PartRibbonTabNameInternal,
+                                                                             Guid.NewGuid().ToString())
+            Dim panelPart As Inventor.RibbonPanel = tabPart.RibbonPanels.Add(My.Settings.panelPartName,
+                                                                                   My.Settings.panelPartNameInternal,
+                                                                                   Guid.NewGuid().ToString())
+            panelPart.CommandControls.AddButton(DumpiLogicRulesButton, True)
+            panelPart.CommandControls.AddButton(ExtractiLogicRulesButton, True)
+            panelPart.CommandControls.AddButton(SimplifyRulesButton, True)
+            'get the assembly ribbon
+            Dim assemblyRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Assembly")
+            Dim tabAssembly As Inventor.RibbonTab = assemblyRibbon.RibbonTabs.Add(My.Settings.TabName,
+                                                                                     My.Settings.AssemblyRibbonTabNameInternal,
+                                                                                     Guid.NewGuid().ToString())
+            Dim panelAssembly As Inventor.RibbonPanel = tabAssembly.RibbonPanels.Add(My.Settings.panelAssemblyName,
+                                                                                           My.Settings.panelAssemblyNameInternal,
+                                                                                           Guid.NewGuid().ToString())
+            panelAssembly.CommandControls.AddButton(DumpiLogicRulesButton, True)
+            panelAssembly.CommandControls.AddButton(ExtractiLogicRulesButton, True)
+            panelAssembly.CommandControls.AddButton(SimplifyRulesButton, True)
+            'get the zero doc ribbon
+            Dim zeroDocRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("ZeroDoc")
+            Dim tabZeroDoc As Inventor.RibbonTab = zeroDocRibbon.RibbonTabs.Add(My.Settings.TabName,
+                                                                                   My.Settings.ZeroDocRibbonTabNameInternal,
+                                                                                   Guid.NewGuid().ToString())
+            Dim panelZeroDoc As Inventor.RibbonPanel = tabZeroDoc.RibbonPanels.Add(My.Settings.panelZeroDocName,
+                                                                                      My.Settings.panelZeroDocNameInternal,
+                                                                                      Guid.NewGuid().ToString())
+            'these two buttons will not function with zero documents open!
+            panelZeroDoc.CommandControls.AddButton(DumpiLogicRulesButton, True)
+            panelZeroDoc.CommandControls.AddButton(ExtractiLogicRulesButton, True)
+            panelZeroDoc.CommandControls.AddButton(SimplifyRulesButton, True)
+            'get the drawing doc ribbon
+            Dim DrawingRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Drawing")
+            Dim tabDrawing As Inventor.RibbonTab = DrawingRibbon.RibbonTabs.Add(My.Settings.TabName,
+                                                                                   My.Settings.DrawingRibbonTabNameInternal,
+                                                                                   Guid.NewGuid().ToString())
+            Dim panelDrawing As Inventor.RibbonPanel = tabDrawing.RibbonPanels.Add(My.Settings.panelDrawingName,
+                                                                                      My.Settings.panelDrawingNameInternal,
+                                                                                      Guid.NewGuid().ToString())
+            panelDrawing.CommandControls.AddButton(DumpiLogicRulesButton, True)
+            panelDrawing.CommandControls.AddButton(ExtractiLogicRulesButton, True)
+            panelDrawing.CommandControls.AddButton(SimplifyRulesButton, True)
 
-            '** Sample to illustrate creating a button on a new panel of the Tools tab of the Part ribbon.
-
-            '' Get the part ribbon.
-            'Dim partRibbon As Ribbon = g_inventorApplication.UserInterfaceManager.Ribbons.Item("Part")
-
-            '' Get the "Tools" tab.
-            'Dim toolsTab As RibbonTab = partRibbon.RibbonTabs.Item("id_TabTools")
-
-            '' Create a new panel.
-            'Dim customPanel As RibbonPanel = toolsTab.RibbonPanels.Add("Sample", "MysSample", AddInClientID)
-
-            '' Add a button.
-            'customPanel.CommandControls.AddButton(m_sampleButton)
+            AddHandler ExtractiLogicRulesButton.OnExecute, AddressOf ExtractRules
+            AddHandler DumpiLogicRulesButton.OnExecute, AddressOf RunRulesDump
+            AddHandler SimplifyRulesButton.OnExecute, AddressOf SimplifyRules
         End Sub
 
         Private Sub m_uiEvents_OnResetRibbonInterface(Context As NameValueMap) Handles m_uiEvents.OnResetRibbonInterface
@@ -125,7 +175,6 @@ Namespace iLogicdotnet
 
     End Class
 End Namespace
-
 
 Public Module Globals
     ' Inventor application object.
@@ -180,10 +229,10 @@ Public Module Globals
     ' Dim smallIcon As stdole.IPictureDisp = PictureDispConverter.ToIPictureDisp(My.Resources.MyIcon)
 
     Public NotInheritable Class PictureDispConverter
-        <DllImport("OleAut32.dll", EntryPoint:="OleCreatePictureIndirect", ExactSpelling:=True, PreserveSig:=False)> _
-        Private Shared Function OleCreatePictureIndirect( _
-            <MarshalAs(UnmanagedType.AsAny)> ByVal picdesc As Object, _
-            ByRef iid As Guid, _
+        <DllImport("OleAut32.dll", EntryPoint:="OleCreatePictureIndirect", ExactSpelling:=True, PreserveSig:=False)>
+        Private Shared Function OleCreatePictureIndirect(
+            <MarshalAs(UnmanagedType.AsAny)> ByVal picdesc As Object,
+            ByRef iid As Guid,
             <MarshalAs(UnmanagedType.Bool)> ByVal fOwn As Boolean) As stdole.IPictureDisp
         End Function
 
@@ -197,7 +246,7 @@ Public Module Globals
             Public Const PICTYPE_BITMAP As Short = 1
             Public Const PICTYPE_ICON As Short = 3
 
-            <StructLayout(LayoutKind.Sequential)> _
+            <StructLayout(LayoutKind.Sequential)>
             Public Class Icon
                 Friend cbSizeOfStruct As Integer = Marshal.SizeOf(GetType(PICTDESC.Icon))
                 Friend picType As Integer = PICTDESC.PICTYPE_ICON
@@ -210,7 +259,7 @@ Public Module Globals
                 End Sub
             End Class
 
-            <StructLayout(LayoutKind.Sequential)> _
+            <StructLayout(LayoutKind.Sequential)>
             Public Class Bitmap
                 Friend cbSizeOfStruct As Integer = Marshal.SizeOf(GetType(PICTDESC.Bitmap))
                 Friend picType As Integer = PICTDESC.PICTYPE_BITMAP

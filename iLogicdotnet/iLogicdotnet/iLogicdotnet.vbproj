@@ -96,6 +96,7 @@
     <Compile Include="StandardAddInServer.vb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="iLogicdotnet.X.manifest" />
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +111,9 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SaveRules.ico" />
+    <EmbeddedResource Include="ExternaliseiLogicRules.ico" />
+    <Content Include="SimplifyiLogicRules.ico" />
     <Content Include="iLogicUserSnippets.xml" />
   </ItemGroup>
   <ItemGroup>
