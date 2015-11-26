@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="iLogicRule" type="iLogicRuleType" />
+    <xs:complexType name="iLogicRuleType">
+      <xs:sequence>
+        <xs:element ref="Rule" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  <xs:element name="Rule" type="RuleType" />
+  <xs:complexType name="RuleType">
+      <xs:sequence>
+        <xs:element ref="Name"/>
+        <xs:element ref="IsActive"/>
+        <xs:element ref="FireDependentImmediately"/>
+        <xs:element ref="AutomaticOnParameterChange"/>
+        <xs:element ref="Silentoperation"/>
+        <xs:element ref="Text"/>
+        <xs:element ref="ParentFileName"/>
+      </xs:sequence>
+  </xs:complexType>
+  <xs:element type="xs:string"  name="ParentFileName"/>
+  <xs:element type="xs:string" name="Name"/>
+  <xs:element type="xs:boolean" name="IsActive"/>
+  <xs:element type="xs:boolean" name="FireDependentImmediately"/>
+  <xs:element type="xs:boolean" name="AutomaticOnParameterChange"/>
+  <xs:element type="xs:boolean" name="Silentoperation"/>
+  <xs:element type="xs:string" name="Text"/>
+  
+  </xs:schema>

@@ -1,6 +1,9 @@
 Imports Inventor
 Imports System.Runtime.InteropServices
 Imports Microsoft.Win32
+Imports Autodesk.iLogic.Interfaces
+Imports System.Windows.Forms
+Imports System.Linq
 
 Namespace iLogicdotnet
     <ProgIdAttribute("iLogicdotnet.StandardAddInServer"),
@@ -13,6 +16,9 @@ Namespace iLogicdotnet
         Private DumpiLogicRulesButton As ButtonDefinition
         Private ExtractiLogicRulesButton As ButtonDefinition
         Private SimplifyRulesButton As ButtonDefinition
+
+        Public rulesListObject As iLogicRuleType = Nothing
+        Public ruleslistFileName As String = String.Empty
 
 #Region "ApplicationAddInServer Members"
 
@@ -172,10 +178,113 @@ Namespace iLogicdotnet
         '    MsgBox("Button was clicked.")
         'End Sub
 #End Region
+#Region "RulesDump"
+        ''' <summary>
+        '''
+        ''' </summary>
+        ''' <param name="Context"></param>
+        Private Sub RunRulesDump(Context As NameValueMap)
+            MessageBox.Show("Hello World!") '<-debugging!
+            'Dim Auto As Automation.iLogicAutomation
+            'Auto = iLogic.Automation
+            Dim iLogicAuto As Object = GetiLogicAutomation(g_inventorApplication)
+            Dim oDoc As Document = g_inventorApplication.ActiveDocument
+            'Dim ruleColl As List(Of iLogicRule) = New List(Of iLogicRule)
+            ' Build collection of rules
+            'ruleColl = New List(Of iLogicRule)
+            rulesListObject = New iLogicRuleType
+            BuildRuleColl(oDoc, iLogicAuto)
+            ' Loop through all referenced docs in assembly
+            For Each oSubDoc As Document In oDoc.AllReferencedDocuments
+                ' Build collection of rules
 
+                BuildRuleColl(oSubDoc, iLogicAuto)
+            Next
+            DumpExistingRules(oDoc)
+            MessageBox.Show("Done dumping iLogic rules to: " + ruleslistFileName)
+        End Sub
+
+        ''' <summary>
+        ''' Dumps any iLogic rules found to an XML document of the same name as the assembly.
+        ''' </summary>
+        ''' <param name="oDoc"></param>
+        Private Sub DumpExistingRules(ByVal oDoc As Document)
+            'Dim rulesList As New iLogicRuleType
+            ruleslistFileName = IO.Path.GetDirectoryName(oDoc.FullFileName) + "\" +
+                                  IO.Path.GetFileNameWithoutExtension(oDoc.FullFileName) +
+                                  My.Settings.RulesFileNameDelimiter +
+                                  My.Settings.DefaultRulesFileName
+
+            rulesListObject.SaveToFile(ruleslistFileName)
+        End Sub
+
+        ''' <summary>
+        ''' Adds iLogic rules from each document passed to it to the global rulelist.
+        ''' </summary>
+        ''' <param name="oDoc"></param>
+        ''' <param name="iLogicAuto"></param>
+        Private Sub BuildRuleColl(oDoc As Document, iLogicAuto As Object)
+            Dim ruleName As String = String.Empty
+            Dim rules As Object = iLogicAuto.rules(oDoc)
+
+            If Not (rules Is Nothing) Then
+                For Each rule As iLogicRule In rules
+                    Dim thisrule As RuleType = New RuleType
+                    thisrule.Name = rule.Name
+                    thisrule.IsActive = rule.IsActive
+                    thisrule.FireDependentImmediately = rule.FireDependentImmediately
+                    thisrule.AutomaticOnParameterChange = rule.AutomaticOnParamChange
+                    thisrule.Silentoperation = rule.SilentOperation
+                    thisrule.Text = rule.Text
+                    thisrule.ParentFileName = oDoc.FullFileName
+                    'this is removing files where the file already exists in the .xml output.
+                    'what we should do instead is look for rules with the same name and then remove the duplicates
+                    Dim foundexistingrule As RuleType = (From anEntry As RuleType In rulesListObject.Rule
+                                                         Where anEntry.ParentFileName = oDoc.FullFileName And anEntry.Name = thisrule.Name
+                                                         Select anEntry).FirstOrDefault()
+                    If Not foundexistingrule Is Nothing Then
+                        'remove existing entries for this document
+                        rulesListObject.Rule.RemoveAll(Function(X) X.ParentFileName.Contains(oDoc.FullFileName))
+                        rulesListObject.Rule.Add(thisrule)
+                    Else
+                        'remove existing entries for this document
+                        rulesListObject.Rule.Add(thisrule)
+                    End If
+                Next
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Gets the iLogic Automation interface from the current Inventor application.
+        ''' </summary>
+        ''' <param name="app"></param>
+        ''' <returns></returns>
+        Function GetiLogicAutomation(ByVal app As Inventor.Application) As Object
+
+            Dim addIn As Inventor.ApplicationAddIn = Nothing
+            Try
+                addIn = app.ApplicationAddIns.ItemById("{3bdd8d79-2179-4b11-8a5a-257b1c0263ac}")
+            Catch ex As Exception
+                Return Nothing
+            End Try
+
+            Return addIn.Automation
+        End Function
+#End Region
+#Region "ExtractRules"
+        Private Sub ExtractRules(Context As NameValueMap)
+            MessageBox.Show("Hello World", "Rule Extractor")
+        End Sub
+#End Region
+#Region "Simplify Rules"
+        Private Sub SimplifyRules(Context As NameValueMap)
+            MessageBox.Show("Hello World", "Rule Simplification")
+        End Sub
+#End Region
     End Class
 End Namespace
 
+#Region "Icon Tools"
 Public Module Globals
     ' Inventor application object.
     Public g_inventorApplication As Inventor.Application
@@ -286,3 +395,4 @@ Public Module Globals
 #End Region
 
 End Module
+#End Region

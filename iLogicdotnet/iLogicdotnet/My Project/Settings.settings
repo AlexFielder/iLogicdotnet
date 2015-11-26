@@ -86,5 +86,11 @@
     <Setting Name="panelDrawingNameInternal" Type="System.String" Scope="User">
       <Value Profile="(Default)">Drawingildotnet</Value>
     </Setting>
+    <Setting Name="RulesFileNameDelimiter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-</Value>
+    </Setting>
+    <Setting Name="DefaultRulesFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

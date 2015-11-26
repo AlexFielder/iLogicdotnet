@@ -69,16 +69,30 @@
     <RootNamespace>iLogicdotnet</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autodesk.iLogic">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2016\Bin\Autodesk.iLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Automation">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2016\Bin\Autodesk.iLogic.Automation.dll</HintPath>
+    </Reference>
+    <Reference Include="Autodesk.iLogic.Interfaces">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2016\Bin\Autodesk.iLogic.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="autodesk.inventor.interop, Version=20.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_20.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq, Version=1.4.18916.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.1.4.0\lib\net35\MoreLinq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -88,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="iLogicRules.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -103,16 +118,21 @@
     <None Include="Autodesk.iLogicdotnet.Inventor.addin" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="iLogicRules.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="My Project\Settings.settings">
       <CustomToolNamespace>My</CustomToolNamespace>
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="packages.config" />
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SaveRules.ico" />
     <EmbeddedResource Include="ExternaliseiLogicRules.ico" />
+    <Content Include="iLogicRules.xml" />
     <Content Include="SimplifyiLogicRules.ico" />
     <Content Include="iLogicUserSnippets.xml" />
   </ItemGroup>

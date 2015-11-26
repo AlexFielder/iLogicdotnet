@@ -389,6 +389,30 @@ Namespace My
                 Me("panelDrawingNameInternal") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("-")>  _
+        Public Property RulesFileNameDelimiter() As String
+            Get
+                Return CType(Me("RulesFileNameDelimiter"),String)
+            End Get
+            Set
+                Me("RulesFileNameDelimiter") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property DefaultRulesFileName() As String
+            Get
+                Return CType(Me("DefaultRulesFileName"),String)
+            End Get
+            Set
+                Me("DefaultRulesFileName") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<iLogicRule xmlns:gruk="http://www.graitec.co.uk"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.w3schools.com/GraitecUK iLogicRules.xsd">
+  <Rule>
+    <Name>str1234</Name>
+    <IsActive>true</IsActive>
+    <FireDependentImmediately>true</FireDependentImmediately>
+    <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
+    <Silentoperation>true</Silentoperation>
+    <Text>str1234</Text>
+  </Rule>
+  <Rule>
+    <Name>str12345</Name>
+    <IsActive>true</IsActive>
+    <FireDependentImmediately>true</FireDependentImmediately>
+    <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
+    <Silentoperation>true</Silentoperation>
+    <Text>str1234</Text>
+  </Rule>
+  <Rule>
+    <Name>str12347</Name>
+    <IsActive>true</IsActive>
+    <FireDependentImmediately>true</FireDependentImmediately>
+    <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
+    <Silentoperation>true</Silentoperation>
+    <Text>str1234</Text>
+  </Rule>
+  <Rule>
+    <Name>string</Name>
+    <IsActive>true</IsActive>
+    <FireDependentImmediately>false</FireDependentImmediately>
+    <AutomaticOnParameterChange>false</AutomaticOnParameterChange>
+    <Silentoperation>false</Silentoperation>
+    <Text>123af45</Text>
+  </Rule>
+</iLogicRule>
