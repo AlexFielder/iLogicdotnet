@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<iLogicRule xmlns:gruk="http://www.graitec.co.uk"
+<iLogicRule xmlns:gruk="https://twitter.com/AlexFielder"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.w3schools.com/GraitecUK iLogicRules.xsd">
+        xsi:schemaLocation="http://www.w3schools.com/AlexFielder iLogicRules.xsd">
   <Rule>
     <Name>str1234</Name>
     <IsActive>true</IsActive>
@@ -9,6 +9,7 @@
     <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
     <Silentoperation>true</Silentoperation>
     <Text>str1234</Text>
+    <ParentFileName>Filename</ParentFileName>
   </Rule>
   <Rule>
     <Name>str12345</Name>
@@ -17,6 +18,7 @@
     <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
     <Silentoperation>true</Silentoperation>
     <Text>str1234</Text>
+    <ParentFileName>Filename</ParentFileName>
   </Rule>
   <Rule>
     <Name>str12347</Name>
@@ -25,6 +27,7 @@
     <AutomaticOnParameterChange>true</AutomaticOnParameterChange>
     <Silentoperation>true</Silentoperation>
     <Text>str1234</Text>
+    <ParentFileName>Filename</ParentFileName>
   </Rule>
   <Rule>
     <Name>string</Name>
@@ -33,5 +36,6 @@
     <AutomaticOnParameterChange>false</AutomaticOnParameterChange>
     <Silentoperation>false</Silentoperation>
     <Text>123af45</Text>
+    <ParentFileName>filename</ParentFileName>
   </Rule>
 </iLogicRule>

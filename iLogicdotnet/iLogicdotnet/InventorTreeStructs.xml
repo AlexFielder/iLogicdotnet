@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<InventorTreeStruct xmlns:gruk="https://twitter.com/AlexFielder"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.w3schools.com/AlexFielder InventorTreeStructs.xsd">
+  <!--Here follows some example data build around the XSD file.-->
+  <FileReference>
+    <FullFileName>FileName001</FullFileName>
+    <Occurrence>
+      <ParentFileName>ParentAssembly</ParentFileName>
+      <OccurrenceLocalName>BrowserNodeName</OccurrenceLocalName>
+    </Occurrence>
+    <Parameters>
+      <Parameter>
+        <ParameterName>Parameter001</ParameterName>
+        <ParameterDoubleValue>0.001</ParameterDoubleValue>
+        <!-- uncomment the following to prove the choice works!-->
+        <!--<ParameterBooleanValue>true</ParameterBooleanValue>-->
+        <!--<ParameterTextValue>Parameter001Value</ParameterTextValue>-->
+        <LinkedParameter>
+          <IsLinked>false</IsLinked>
+          <LinkedFileName>C:\Some\path\to\a\linked\file.xls</LinkedFileName>
+        </LinkedParameter>
+      </Parameter>
+      <Parameter>
+        <ParameterName>Parameter002</ParameterName>
+        <ParameterDoubleValue>0.001</ParameterDoubleValue>
+        <LinkedParameter>
+          <IsLinked>false</IsLinked>
+          <LinkedFileName>C:\Some\path\to\another\linked\file.xls</LinkedFileName>
+        </LinkedParameter>
+      </Parameter>
+    </Parameters>
+    <FileType>
+      <HasChildren>true</HasChildren>
+      <FileExtension>.ipt</FileExtension>
+    </FileType>
+    <IsSuppressed>true</IsSuppressed>
+  </FileReference>
+  <FileReference>
+    <FullFileName>FileName002</FullFileName>
+    <Occurrence>
+      <ParentFileName>ParentAssembly</ParentFileName>
+      <OccurrenceLocalName>BrowserNodeName</OccurrenceLocalName>
+    </Occurrence>
+    <Parameters>
+      <Parameter>
+        <ParameterName>Parameter001</ParameterName>
+        <ParameterDoubleValue>0.001</ParameterDoubleValue>
+        <!-- uncomment the following to prove the choice works!-->
+        <!--<ParameterBooleanValue>true</ParameterBooleanValue>-->
+        <!--<ParameterTextValue>Parameter001Value</ParameterTextValue>-->
+        <LinkedParameter>
+          <IsLinked>false</IsLinked>
+          <LinkedFileName>C:\Some\path\to\a\linked\file.xls</LinkedFileName>
+        </LinkedParameter>
+      </Parameter>
+      <Parameter>
+        <ParameterName>Parameter002</ParameterName>
+        <ParameterDoubleValue>0.001</ParameterDoubleValue>
+        <LinkedParameter>
+          <IsLinked>false</IsLinked>
+          <LinkedFileName>C:\Some\path\to\another\linked\file.xls</LinkedFileName>
+        </LinkedParameter>
+      </Parameter>
+    </Parameters>
+    <FileType>
+      <HasChildren>true</HasChildren>
+      <FileExtension>.ipt</FileExtension>
+    </FileType>
+    <IsSuppressed>false</IsSuppressed>
+  </FileReference>
+</InventorTreeStruct>

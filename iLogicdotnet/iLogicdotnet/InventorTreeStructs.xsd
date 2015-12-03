@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--Here follows my description of a typical Inventor (Assembly) File tree-->
+  <xs:element name="InventorTreeStruct" type="InventorTreeType" />
+  <xs:complexType name="InventorTreeType">
+    <xs:sequence>
+      <xs:element ref="FileReference" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FileReference" type="FileReferenceType" />
+  <xs:complexType name="FileReferenceType">
+    <xs:sequence>
+      <xs:element name="FullFileName" />
+      <xs:element name="Occurrence" type="InventorOccurrenceType" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element ref="Parameters" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element ref="FileType" maxOccurs ="1" />
+      <xs:element name="IsSuppressed" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InventorOccurrenceType">
+    <xs:sequence>
+      <xs:element name="ParentFileName" />
+      <xs:element name="OccurrenceLocalName" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name ="Parameters" type="InventorParameterCollectionType" />
+  <xs:complexType name="InventorParameterCollectionType">
+    <xs:sequence>
+      <xs:element ref="Parameter" minOccurs ="0" maxOccurs ="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Parameter" type="InventorParameterType" />
+  <xs:complexType name="InventorParameterType">
+    <xs:sequence>
+      <xs:element name="ParameterName" />
+      <xs:choice id ="ParameterValue" minOccurs="0" maxOccurs="1">
+        <xs:element name="ParameterDoubleValue" type="xs:double" minOccurs="0" maxOccurs="1" />
+        <xs:element name="ParameterBooleanValue" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+        <xs:element name="ParameterTextValue" type="xs:string" minOccurs="0" maxOccurs="1" />
+      </xs:choice>
+      <xs:element ref="LinkedParameter" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LinkedParameter" type="InventorLinkedParameter" />
+  <xs:complexType name="InventorLinkedParameter">
+    <xs:sequence>
+      <xs:element name="IsLinked" type="xs:boolean" />
+      <xs:element name="LinkedFileName" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FileType" type="InventorFileType" />
+  <xs:complexType name="InventorFileType">
+    <xs:sequence>
+      <xs:element name="HasChildren" type="xs:boolean" nillable="false" />
+      <xs:element name="FileExtension" type="xs:string" nillable="false " />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

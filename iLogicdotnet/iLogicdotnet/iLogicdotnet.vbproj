@@ -121,6 +121,9 @@
     <None Include="iLogicRules.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="InventorTreeStructs.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="My Project\Settings.settings">
       <CustomToolNamespace>My</CustomToolNamespace>
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -133,6 +136,7 @@
     <EmbeddedResource Include="SaveRules.ico" />
     <EmbeddedResource Include="ExternaliseiLogicRules.ico" />
     <Content Include="iLogicRules.xml" />
+    <Content Include="InventorTreeStructs.xml" />
     <Content Include="SimplifyiLogicRules.ico" />
     <Content Include="iLogicUserSnippets.xml" />
   </ItemGroup>
